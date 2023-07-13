@@ -1,12 +1,14 @@
-package GUI.components;
+package GUI.planner.components;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.*;
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class CalendarPanel extends JPanel {
 

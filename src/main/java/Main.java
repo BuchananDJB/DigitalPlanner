@@ -1,4 +1,4 @@
-import GUI.DigitalPlanner;
+import GUI.planner.DigitalPlanner;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;

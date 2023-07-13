@@ -1,9 +1,14 @@
-package GUI;
+package GUI.planner;
 
-import GUI.components.CalendarPanel;
+import GUI.Tools.GUITools;
+import GUI.planner.components.CalendarPanel;
+import Tools.Constants;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class DigitalPlanner extends JFrame {
 /*
@@ -39,6 +44,7 @@ Development notes
 				file for notes
 */
     private final CalendarPanel calendarPanel;
+    private final JTextArea generalNotesTextArea;
 
     public DigitalPlanner() {
         this.calendarPanel = new CalendarPanel();
@@ -70,11 +76,28 @@ Development notes
         JSplitPane upperSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, dailyInfoTabbedPane);
         upperSplitPane.setDividerLocation(275);
 
-        JTextArea generalNotesTextArea = new JTextArea();
-        generalNotesTextArea.setBorder(BorderFactory.createTitledBorder("General Notes"));
+        this.generalNotesTextArea = initializeGeneralNotesTextArea();
 
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperSplitPane, generalNotesTextArea);
         mainSplitPane.setDividerLocation(500);
         this.getContentPane().add(BorderLayout.CENTER, mainSplitPane);
+    }
+
+    private JTextArea initializeGeneralNotesTextArea() {
+        String notesFileContents = readFileAsString(Constants.GENERAL_NOTES_PATH);
+        JTextArea notesTextArea = new JTextArea(notesFileContents);
+        notesTextArea.setBorder(BorderFactory.createTitledBorder("General Notes"));
+        return notesTextArea;
+    }
+
+    private String readFileAsString(String filePath) {
+        String fileContents = "";
+        try {
+            fileContents = Files.readString(Path.of(filePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+            GUITools.displayDialog(e.getMessage());
+        }
+        return fileContents;
     }
 }
