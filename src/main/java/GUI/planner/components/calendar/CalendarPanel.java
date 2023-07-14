@@ -1,4 +1,4 @@
-package GUI.planner.components;
+package GUI.planner.components.calendar;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

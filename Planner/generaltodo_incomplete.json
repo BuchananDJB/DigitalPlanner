@@ -1,0 +1,12 @@
+[
+  {
+    "isComplete": false,
+    "description": "Do stuff",
+    "taskPriority": "LOW"
+  },
+  {
+    "isComplete": false,
+    "description": "Finish project",
+    "taskPriority": "HIGH"
+  }
+]
