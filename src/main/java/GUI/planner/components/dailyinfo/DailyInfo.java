@@ -1,7 +1,6 @@
 package GUI.planner.components.dailyinfo;
 
 import GUI.Tools.GUITools;
-import Tools.DataTools;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,22 +22,5 @@ public class DailyInfo extends JPanel {
         this.dailyInfoTabbedPane = new DailyInfoTabbedPane();
         this.setLayout(new BorderLayout());
         this.add(dailyInfoTabbedPane, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(createAddTabButton());
-        this.add(buttonPanel, BorderLayout.NORTH);
-    }
-
-    private JButton createAddTabButton() {
-        JButton addTabButton = new JButton("+");
-        addTabButton.setFocusable(false);
-        addTabButton.setPreferredSize(new Dimension(20, 20));
-        addTabButton.addActionListener(e -> {
-            String tabName = JOptionPane.showInputDialog(this, "Enter tab name:");
-            if (!DataTools.isEmptyString(tabName)) {
-                dailyInfoTabbedPane.addNewTab(tabName);
-            }
-        });
-        return addTabButton;
     }
 }
