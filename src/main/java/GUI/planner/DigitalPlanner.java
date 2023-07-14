@@ -77,5 +77,7 @@ public class DigitalPlanner extends JFrame implements DateSelectionListener {
 
     public void saveAllData() {
         DataTools.writeStringToFile(generalNotesTextArea.getText(), Constants.GENERAL_NOTES_PATH);
+
+        // TODO: implement additional saving functionality
     }
 }
