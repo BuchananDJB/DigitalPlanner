@@ -84,6 +84,8 @@ public class TodoListTable extends JTable {
     private void enableColumnSorting() {
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) getModel());
         setRowSorter(sorter);
+
+        // TODO: revisit sorting, creates weird interactions with new empty rows
     }
 
     private void addEmptyRow() {
@@ -94,23 +96,18 @@ public class TodoListTable extends JTable {
     private boolean isRowEditable(int row, int column) {
         DefaultTableModel model = (DefaultTableModel) getModel();
 
-        // Check if the previous row is fully filled
+        // Check if the previous description column is filled
         if (row > 0) {
-            int columnCount = model.getColumnCount();
-            for (int i = 0; i < columnCount; i++) {
-                Object value = model.getValueAt(row - 1, i);
-                if (value == null || value.toString().isEmpty()) {
-                    return false;
-                }
+            Object description = model.getValueAt(row - 1, 1); // Column index 1 for description
+            if (description == null || description.toString().isEmpty()) {
+                return false;
             }
         }
 
-        // Enable editing for "Done" column if Description and Priority columns are filled
+        // Enable editing for "Done" column if Description column is filled
         if (column == 0) {
             Object description = model.getValueAt(row, 1);
-            Object priority = model.getValueAt(row, 2);
-            return description != null && !description.toString().isEmpty() &&
-                    priority != null && !priority.toString().isEmpty();
+            return description != null && !description.toString().isEmpty();
         }
 
         return true;
@@ -121,7 +118,7 @@ public class TodoListTable extends JTable {
         super.setValueAt(aValue, row, column);
 
         // Add empty row and enable editing for "Done" column
-        if (column == 2 && row == getRowCount() - 1) {
+        if (column == 1 && row == getRowCount() - 1) {
             addEmptyRow();
             TableColumn doneColumn = getColumnModel().getColumn(0);
             doneColumn.setCellEditor(new DefaultCellEditor(new JCheckBox()));
