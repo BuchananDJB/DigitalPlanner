@@ -15,7 +15,8 @@ public class Main {
 
     private static void initializeJFrame() {
         JFrame plannerFrame = new DigitalPlanner();
-        plannerFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        plannerFrame.setTitle("Digital Planner");
+        plannerFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // TODO: Save all data
         plannerFrame.setSize(1280, 720);
         plannerFrame.setLocationRelativeTo(null);
         plannerFrame.setVisible(true);

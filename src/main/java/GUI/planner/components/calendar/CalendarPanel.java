@@ -6,9 +6,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+import java.util.*;
 
 public class CalendarPanel extends JPanel {
 
@@ -20,11 +18,16 @@ public class CalendarPanel extends JPanel {
     private DefaultTableModel tableModel;
     private int calendarMonthOffset;
 
+    private Calendar selectedDate;
+
+    private Set<DateSelectionListener> dateSelectionListeners;
+
     public CalendarPanel() {
         this(300, 200);
     }
 
     public CalendarPanel(int width, int height) {
+        this.dateSelectionListeners = new HashSet<>();
         this.setSize(width, height);
         this.setLayout(new BorderLayout());
         this.setVisible(true);
@@ -45,7 +48,13 @@ public class CalendarPanel extends JPanel {
         this.add(panel, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
 
+        this.selectedDate = (Calendar) calendar.clone();
+
         this.updateMonth();
+    }
+
+    public void registerDateSelectionListener(DateSelectionListener listener) {
+        dateSelectionListeners.add(listener);
     }
 
     private MouseListener setupMonthYearLabelListener() {
@@ -89,7 +98,7 @@ public class CalendarPanel extends JPanel {
     }
 
     private JScrollPane initializeScrollPane() {
-        String[] columns = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+        String[] columns = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
         tableModel = new DefaultTableModel(null, columns) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -98,6 +107,21 @@ public class CalendarPanel extends JPanel {
         };
         JTable table = new JTable(tableModel);
         table.getTableHeader().setReorderingAllowed(false);
+
+        // Add event listener to table
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = table.getSelectedRow();
+                int column = table.getSelectedColumn();
+                if (row >= 0 && column >= 0) {
+                    int day = (int) table.getValueAt(row, column);
+                    selectedDate.set(Calendar.DAY_OF_MONTH, day);
+                    notifyDateSelectionListener();
+                }
+            }
+        });
+
         return new JScrollPane(table);
     }
 
@@ -122,11 +146,15 @@ public class CalendarPanel extends JPanel {
         tableModel.setRowCount(weeks);
 
         int i = startDay - 1;
-        for(int day = 1; day <= numberOfDays; ++day) {
-            tableModel.setValueAt(day, i / 7 , i % 7 );
+        for (int day = 1; day <= numberOfDays; ++day) {
+            tableModel.setValueAt(day, i / 7, i % 7);
             ++i;
         }
-
     }
 
+    private void notifyDateSelectionListener() {
+        for (DateSelectionListener listener : dateSelectionListeners) {
+            listener.onDateSelected(selectedDate);
+        }
+    }
 }
