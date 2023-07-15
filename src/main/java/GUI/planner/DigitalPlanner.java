@@ -3,6 +3,7 @@ package GUI.planner;
 import GUI.planner.components.calendar.CalendarPanel;
 import GUI.planner.components.calendar.DateSelectionListener;
 import GUI.planner.components.dailyinfo.DailyInfo;
+import GUI.planner.components.notes.NotesTextArea;
 import GUI.planner.components.todolist.TodoList;
 import Tools.Constants;
 import Tools.DataTools;
@@ -17,7 +18,7 @@ import static Tools.DataTools.readFileAsString;
 public class DigitalPlanner extends JFrame implements DateSelectionListener {
 
     private final TodoList generalTodoList;
-    private final JTextArea generalNotesTextArea;
+    private final NotesTextArea generalNotesTextArea;
     private DailyInfo dailyInfoPane;
     private CalendarPanel calendarPanel;
 
@@ -35,8 +36,12 @@ public class DigitalPlanner extends JFrame implements DateSelectionListener {
 
         this.generalNotesTextArea = createGeneralNotesTextArea();
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperSplitPane, generalNotesTextArea);
+
         mainSplitPane.setDividerLocation(550);
         this.getContentPane().add(BorderLayout.CENTER, mainSplitPane);
+
+        validate();
+        repaint();
     }
 
     private void initializeCalendarPanel() {
@@ -45,9 +50,9 @@ public class DigitalPlanner extends JFrame implements DateSelectionListener {
         this.calendarPanel.registerDateSelectionListener(this);
     }
 
-    private JTextArea createGeneralNotesTextArea() {
+    private NotesTextArea createGeneralNotesTextArea() {
         String notesFileContents = readFileAsString(Constants.GENERAL_NOTES_PATH);
-        JTextArea notesTextArea = new JTextArea(notesFileContents);
+        NotesTextArea notesTextArea = new NotesTextArea(notesFileContents);
         notesTextArea.setBorder(BorderFactory.createTitledBorder("General Notes"));
         return notesTextArea;
     }
