@@ -2,6 +2,8 @@ import GUI.planner.DigitalPlanner;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,10 +16,19 @@ public class Main {
     }
 
     private static void initializeJFrame() {
-        JFrame plannerFrame = new DigitalPlanner();
-        plannerFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        plannerFrame.setSize(1280, 720);
-        plannerFrame.setLocationRelativeTo(null);
-        plannerFrame.setVisible(true);
+        DigitalPlanner digitalPlanner = new DigitalPlanner();
+        digitalPlanner.setTitle("Digital Planner");
+        digitalPlanner.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        digitalPlanner.setSize(1280, 720);
+        digitalPlanner.setLocationRelativeTo(null);
+        digitalPlanner.setVisible(true);
+
+        digitalPlanner.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                digitalPlanner.saveAllData();
+                digitalPlanner.dispose();
+            }
+        });
     }
 }

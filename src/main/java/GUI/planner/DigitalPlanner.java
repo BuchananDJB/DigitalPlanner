@@ -1,67 +1,88 @@
 package GUI.planner;
 
-import GUI.Tools.GUITools;
 import GUI.planner.components.calendar.CalendarPanel;
+import GUI.planner.components.calendar.DateSelectionListener;
+import GUI.planner.components.dailyinfo.DailyInfo;
+import GUI.planner.components.notes.NotesTextArea;
 import GUI.planner.components.todolist.TodoList;
 import Tools.Constants;
+import Tools.DataTools;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
-public class DigitalPlanner extends JFrame {
+import static Tools.DataTools.readFileAsString;
 
-    private final CalendarPanel calendarPanel;
+public class DigitalPlanner extends JFrame implements DateSelectionListener {
+
     private final TodoList generalTodoList;
-    private final JTextArea generalNotesTextArea;
+    private final NotesTextArea generalNotesTextArea;
+    private DailyInfo dailyInfoPane;
+    private CalendarPanel calendarPanel;
+
+    private JSplitPane upperSplitPane;
 
     public DigitalPlanner() {
-        this.calendarPanel = new CalendarPanel();
-        this.calendarPanel.setBorder(BorderFactory.createTitledBorder("Calendar"));
-
+        initializeCalendarPanel();
         this.generalTodoList = new TodoList();
-
         JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, calendarPanel, generalTodoList);
         leftSplitPane.setDividerLocation(200);
 
-        JTabbedPane dailyInfoTabbedPane = new JTabbedPane();
-        dailyInfoTabbedPane.setBorder(BorderFactory.createTitledBorder("Daily Info"));
-
-        JTextArea dailyNotesTextArea = new JTextArea();
-        dailyNotesTextArea.setBorder(BorderFactory.createTitledBorder("Notes"));
-
-        TodoList dailyTodoList = new TodoList();
-        JSplitPane dailyInfoSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, dailyTodoList, dailyNotesTextArea);
-        dailyInfoSplitPane.setDividerLocation(350);
-        dailyInfoTabbedPane.addTab("General", dailyInfoSplitPane);
-
-        JSplitPane upperSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, dailyInfoTabbedPane);
+        this.dailyInfoPane = new DailyInfo();
+        this.upperSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, dailyInfoPane);
         upperSplitPane.setDividerLocation(300);
 
-        this.generalNotesTextArea = initializeGeneralNotesTextArea();
-
+        this.generalNotesTextArea = createGeneralNotesTextArea();
         JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperSplitPane, generalNotesTextArea);
+
         mainSplitPane.setDividerLocation(550);
         this.getContentPane().add(BorderLayout.CENTER, mainSplitPane);
+
+        validate();
+        repaint();
     }
 
-    private JTextArea initializeGeneralNotesTextArea() {
+    private void initializeCalendarPanel() {
+        this.calendarPanel = new CalendarPanel();
+        this.calendarPanel.setBorder(BorderFactory.createTitledBorder("Calendar"));
+        this.calendarPanel.registerDateSelectionListener(this);
+    }
+
+    private NotesTextArea createGeneralNotesTextArea() {
         String notesFileContents = readFileAsString(Constants.GENERAL_NOTES_PATH);
-        JTextArea notesTextArea = new JTextArea(notesFileContents);
+        NotesTextArea notesTextArea = new NotesTextArea(notesFileContents);
         notesTextArea.setBorder(BorderFactory.createTitledBorder("General Notes"));
         return notesTextArea;
     }
 
-    private String readFileAsString(String filePath) {
-        String fileContents = "";
-        try {
-            fileContents = Files.readString(Path.of(filePath));
-        } catch (IOException e) {
-            e.printStackTrace();
-            GUITools.displayDialog(e.getMessage());
-        }
-        return fileContents;
+    @Override
+    public void onDateSelected(Calendar selectedDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        String dateString = dateFormat.format(selectedDate.getTime());
+
+        int dividerLocation = upperSplitPane.getDividerLocation();
+        DailyInfo newDailyInfoPane = new DailyInfo(dateString);
+        // TODO: read in existing data into newDailyInfoPane
+        //  make sure to store references to these to load them in again
+        //  if the same date is clicked again
+        upperSplitPane.remove(dailyInfoPane);
+        upperSplitPane.add(newDailyInfoPane);
+        upperSplitPane.setDividerLocation(dividerLocation);
+        this.dailyInfoPane = newDailyInfoPane;
+
+        revalidate();
+        repaint();
+
+        /*int year = selectedDate.get(Calendar.YEAR);
+        int month = selectedDate.get(Calendar.MONTH) + 1;
+        int day = selectedDate.get(Calendar.DAY_OF_MONTH);*/
+    }
+
+    public void saveAllData() {
+        DataTools.writeStringToFile(generalNotesTextArea.getText(), Constants.GENERAL_NOTES_PATH);
+
+        // TODO: implement additional saving functionality
     }
 }
