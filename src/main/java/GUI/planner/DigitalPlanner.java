@@ -26,7 +26,7 @@ public class DigitalPlanner extends JFrame implements DateSelectionListener {
 
     public DigitalPlanner() {
         initializeCalendarPanel();
-        this.generalTodoList = new TodoList();
+        this.generalTodoList = new TodoList(Constants.PLANNER_ROOT_DIRECTORY);
         JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, calendarPanel, generalTodoList);
         leftSplitPane.setDividerLocation(200);
 

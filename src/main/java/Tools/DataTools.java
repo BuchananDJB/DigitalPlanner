@@ -4,10 +4,12 @@ import GUI.Tools.GUITools;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class DataTools {
@@ -51,5 +53,10 @@ public class DataTools {
     public static <T> T fromJson(String jsonString, Class<T> tClass) {
         Gson gson = new Gson();
         return gson.fromJson(jsonString, tClass);
+    }
+
+    public static <T> List<T> fromJson(String jsonString, Type type) {
+        Gson gson = new Gson();
+        return gson.fromJson(jsonString, type);
     }
 }

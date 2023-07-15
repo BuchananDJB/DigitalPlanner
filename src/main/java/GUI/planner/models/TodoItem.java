@@ -1,24 +1,24 @@
 package GUI.planner.models;
 
 public class TodoItem {
-    private boolean isComplete;
+    private boolean isDone;
     private String description;
     private TaskPriority priority;
 
     public TodoItem() {}
 
-    public TodoItem(boolean isComplete, String description, TaskPriority priority) {
-        this.isComplete = isComplete;
+    public TodoItem(boolean isDone, String description, TaskPriority priority) {
+        this.isDone = isDone;
         this.description = description;
         this.priority = priority;
     }
 
-    public boolean isComplete() {
-        return isComplete;
+    public boolean isDone() {
+        return isDone;
     }
 
-    public void setComplete(boolean complete) {
-        isComplete = complete;
+    public void setDone(boolean done) {
+        isDone = done;
     }
 
     public String getDescription() {

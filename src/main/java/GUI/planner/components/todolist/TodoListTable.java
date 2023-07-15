@@ -17,6 +17,10 @@ public class TodoListTable extends JTable {
     private final String title;
     private final String[] columnNames = {"Done", "Description", "Priority"};
 
+    public TodoListTable(String title, TodoItemList todoItemList) {
+        this(title);
+        populateTable(todoItemList);
+    }
 
     public TodoListTable(String title) {
         super();
@@ -34,6 +38,21 @@ public class TodoListTable extends JTable {
 
         addEmptyRow();
         setupMouseListener();
+    }
+
+    public void populateTable(TodoItemList todoItemList) {
+        DefaultTableModel model = (DefaultTableModel) getModel();
+        model.setRowCount(0);
+
+        for (TodoItem todoItem : todoItemList.getTodoItems()) {
+            Object[] rowData = new Object[model.getColumnCount()];
+            rowData[0] = todoItem.isDone();
+            rowData[1] = todoItem.getDescription();
+            rowData[2] = todoItem.getPriority();
+            model.addRow(rowData);
+        }
+
+        addEmptyRow();
     }
 
     private static class DescriptionCellRenderer extends DefaultTableCellRenderer {

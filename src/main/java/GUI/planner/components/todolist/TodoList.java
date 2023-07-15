@@ -1,7 +1,15 @@
 package GUI.planner.components.todolist;
 
+import GUI.planner.models.TodoItem;
+import GUI.planner.models.TodoItemList;
+import Tools.Constants;
+import Tools.DataTools;
+import com.google.gson.reflect.TypeToken;
+
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.Type;
+import java.util.List;
 
 public class TodoList extends JTabbedPane {
 
@@ -16,10 +24,19 @@ public class TodoList extends JTabbedPane {
     private TodoListTable socialCompleteTodoListTable;
     private TodoListTable socialIncompleteTodoListTable;
 
+    public TodoList(String todoListFolderPath) {
+        super();
+        initializeTodoListTablesFromFiles(todoListFolderPath);
+        initializeAllPanes();
+    }
+
     public TodoList() {
         super();
+        initializeNewTodoListTables();
+        initializeAllPanes();
+    }
 
-        initializeTodoListTables();
+    private void initializeAllPanes() {
         this.setBorder(BorderFactory.createTitledBorder(TODO_LIST));
 
         JPanel generalIncompletePanel = createPanel(generalIncompleteTodoListTable);
@@ -36,7 +53,32 @@ public class TodoList extends JTabbedPane {
         this.addTab(SOCIAL, socialPane);
     }
 
-    private void initializeTodoListTables() {
+    private void initializeTodoListTablesFromFiles(String todoListFolderPath) {
+        TypeToken<List<TodoItem>> listTypeToken = new TypeToken<>() {};
+        Type listType = listTypeToken.getType();
+
+        String generalCompleteJson = DataTools.readFileAsString(todoListFolderPath + Constants.GENERAL_TODO_COMPLETE);
+        List<TodoItem> generalComplete = DataTools.fromJson(generalCompleteJson, listType);
+        TodoItemList generalCompleteList = new TodoItemList(generalComplete);
+        this.generalCompleteTodoListTable = new TodoListTable(COMPLETE, generalCompleteList);
+
+        String generalIncompleteJson = DataTools.readFileAsString(todoListFolderPath + Constants.GENERAL_TODO_INCOMPLETE);
+        List<TodoItem> generalIncomplete = DataTools.fromJson(generalIncompleteJson, listType);
+        TodoItemList generalIncompleteList = new TodoItemList(generalIncomplete);
+        this.generalIncompleteTodoListTable = new TodoListTable(INCOMPLETE, generalIncompleteList);
+
+        String socialCompleteJson = DataTools.readFileAsString(todoListFolderPath + Constants.SOCIAL_TODO_COMPLETE);
+        List<TodoItem> socialComplete = DataTools.fromJson(socialCompleteJson, listType);
+        TodoItemList socialCompleteList = new TodoItemList(socialComplete);
+        this.socialCompleteTodoListTable = new TodoListTable(COMPLETE, socialCompleteList);
+
+        String socialIncompleteJson = DataTools.readFileAsString(todoListFolderPath + Constants.SOCIAL_TODO_INCOMPLETE);
+        List<TodoItem> socialIncomplete = DataTools.fromJson(socialIncompleteJson, listType);
+        TodoItemList socialIncompleteList = new TodoItemList(socialIncomplete);
+        this.socialIncompleteTodoListTable = new TodoListTable(INCOMPLETE, socialIncompleteList);
+    }
+
+    private void initializeNewTodoListTables() {
         this.generalCompleteTodoListTable = new TodoListTable(COMPLETE);
         this.generalIncompleteTodoListTable = new TodoListTable(INCOMPLETE);
         this.socialCompleteTodoListTable = new TodoListTable(COMPLETE);
