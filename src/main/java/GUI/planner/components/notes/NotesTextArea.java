@@ -138,6 +138,8 @@ public class NotesTextArea extends JTextArea {
                 }
             }
         });
+
+        setComponentPopupMenu(popupMenu);
     }
 
 }
