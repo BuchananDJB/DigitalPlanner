@@ -1,15 +1,22 @@
 package GUI.planner.components.todolist;
 
 import GUI.planner.models.TaskPriority;
+import GUI.planner.models.TodoItem;
+import GUI.planner.models.TodoItemList;
 
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TodoListTable extends JTable {
 
     private final String title;
     private final String[] columnNames = {"Done", "Description", "Priority"};
+
 
     public TodoListTable(String title) {
         super();
@@ -26,7 +33,7 @@ public class TodoListTable extends JTable {
         descriptionColumn.setCellRenderer(new DescriptionCellRenderer());
 
         addEmptyRow();
-        setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        setupMouseListener();
     }
 
     private static class DescriptionCellRenderer extends DefaultTableCellRenderer {
@@ -68,6 +75,53 @@ public class TodoListTable extends JTable {
         return tableModel;
     }
 
+    private void setupMouseListener() {
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    createRightClickMenu(e).show(TodoListTable.this, e.getX(), e.getY());
+                }
+            }
+        });
+    }
+
+    private JPopupMenu createRightClickMenu(MouseEvent event) {
+        JPopupMenu popupMenu = new JPopupMenu();
+        int clickedRow = rowAtPoint(event.getPoint());
+
+        // Add Todo Item
+        JMenuItem addTodoItem = new JMenuItem("Add Todo Item");
+        addTodoItem.addActionListener(e -> addEmptyRow());
+        popupMenu.add(addTodoItem);
+
+        // Delete Todo Item
+        JMenuItem deleteTodoItem = new JMenuItem("Delete Todo Item");
+        deleteTodoItem.addActionListener(e -> {
+            if (clickedRow != -1) {
+                ((DefaultTableModel) getModel()).removeRow(clickedRow);
+                if (getRowCount() == 0) {
+                    addEmptyRow();
+                }
+            }
+        });
+        popupMenu.add(deleteTodoItem);
+
+        if (clickedRow != -1 && isRowEditable(clickedRow, 0)) {
+            Object value = getValueAt(clickedRow, 0);
+            if (value instanceof Boolean isDone) {
+                JMenuItem markItem = isDone
+                        ? new JMenuItem("Mark Item as Not Done")
+                        : new JMenuItem("Mark Item as Done");
+                markItem.addActionListener(e -> setValueAt(!isDone, clickedRow, 0));
+                popupMenu.add(markItem);
+            }
+
+        }
+
+        return popupMenu;
+    }
+
     private void adjustColumnWidths() {
         TableColumnModel columnModel = getColumnModel();
 
@@ -84,25 +138,17 @@ public class TodoListTable extends JTable {
     private void enableColumnSorting() {
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) getModel());
         setRowSorter(sorter);
-
-        // TODO: revisit sorting, creates weird interactions with new empty rows
     }
 
     private void addEmptyRow() {
         DefaultTableModel model = (DefaultTableModel) getModel();
-        model.addRow(new Object[model.getColumnCount()]);
+        Object[] rowData = new Object[model.getColumnCount()];
+        rowData[0] = false;
+        model.addRow(rowData);
     }
 
     private boolean isRowEditable(int row, int column) {
         DefaultTableModel model = (DefaultTableModel) getModel();
-
-        // Check if the previous description column is filled
-        if (row > 0) {
-            Object description = model.getValueAt(row - 1, 1); // Column index 1 for description
-            if (description == null || description.toString().isEmpty()) {
-                return false;
-            }
-        }
 
         // Enable editing for "Done" column if Description column is filled
         if (column == 0) {
@@ -113,21 +159,23 @@ public class TodoListTable extends JTable {
         return true;
     }
 
-    @Override
-    public void setValueAt(Object aValue, int row, int column) {
-        super.setValueAt(aValue, row, column);
-
-        // Add empty row and enable editing for "Done" column
-        if (column == 1 && row == getRowCount() - 1) {
-            addEmptyRow();
-            TableColumn doneColumn = getColumnModel().getColumn(0);
-            doneColumn.setCellEditor(new DefaultCellEditor(new JCheckBox()));
-        }
-    }
-
     public String getTitle() {
         return title;
     }
 
-    // TODO: Create method to retrieve all data from the table as a TodoItemList (List<TodoItem>)
-}
+    public TodoItemList getTodoItemList() {
+        List<TodoItem> todoItemList = new ArrayList<>();
+
+        DefaultTableModel model = (DefaultTableModel) getModel();
+        int rowCount = model.getRowCount();
+        for (int row = 0; row < rowCount; row++) {
+            boolean isDone = (boolean) model.getValueAt(row, 0);
+            String description = (String) model.getValueAt(row, 1);
+            TaskPriority priority = (TaskPriority) model.getValueAt(row, 2);
+
+            TodoItem todoItem = new TodoItem(isDone, description, priority);
+            todoItemList.add(todoItem);
+        }
+
+        return new TodoItemList(todoItemList);
+    }}
