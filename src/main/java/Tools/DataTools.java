@@ -1,6 +1,7 @@
 package Tools;
 
 import GUI.Tools.GUITools;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,5 +41,15 @@ public class DataTools {
             e.printStackTrace();
             GUITools.displayDialog(e.getMessage());
         }
+    }
+
+    public static <T> String toJson(T object) {
+        Gson gson = new Gson().newBuilder().setPrettyPrinting().create();
+        return gson.toJson(object);
+    }
+
+    public static <T> T fromJson(String jsonString, Class<T> tClass) {
+        Gson gson = new Gson();
+        return gson.fromJson(jsonString, tClass);
     }
 }
