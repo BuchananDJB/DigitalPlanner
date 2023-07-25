@@ -1,0 +1,9 @@
+{
+  "todoItems": [
+    {
+      "isDone": false,
+      "description": "Hi",
+      "priority": "LOW"
+    }
+  ]
+}
