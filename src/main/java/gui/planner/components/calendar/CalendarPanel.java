@@ -17,11 +17,11 @@ public class CalendarPanel extends JPanel {
     private final JButton nextButton;
 
     private DefaultTableModel tableModel;
-    private int calendarMonthOffset;
+    private int currentMonth;
+    private int currentYear;
 
-    private Calendar selectedDate;
-
-    private Set<DateSelectionListener> dateSelectionListeners;
+    private final Calendar selectedDate;
+    private final Set<DateSelectionListener> dateSelectionListeners;
 
     public CalendarPanel() {
         this(300, 200);
@@ -34,7 +34,6 @@ public class CalendarPanel extends JPanel {
         this.setVisible(true);
 
         this.calendar = new GregorianCalendar();
-        this.calendarMonthOffset = 0;
 
         monthYearLabel = new JLabel();
         monthYearLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -83,7 +82,6 @@ public class CalendarPanel extends JPanel {
 
     private void addMonthButtonListener(JButton button, int amount) {
         button.addActionListener(listener -> {
-            calendarMonthOffset += amount;
             calendar.add(Calendar.MONTH, amount);
             updateMonth();
         });
@@ -154,12 +152,14 @@ public class CalendarPanel extends JPanel {
         calendar.setTime(today.getTime());
         updateMonth();
         selectedDate.setTime(today.getTime());
-        calendarMonthOffset = 0;
         notifyDateSelectionListener();
     }
 
     private void updateMonth() {
         calendar.set(Calendar.DAY_OF_MONTH, 1);
+
+        currentMonth = calendar.get(Calendar.MONTH);
+        currentYear = calendar.get(Calendar.YEAR);
 
         String month = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.US);
         int year = calendar.get(Calendar.YEAR);
@@ -172,13 +172,29 @@ public class CalendarPanel extends JPanel {
         tableModel.setRowCount(0);
         tableModel.setRowCount(weeks);
 
-        selectedDate.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
-        selectedDate.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
-
         int i = startDay - 1;
         for (int day = 1; day <= numberOfDays; ++day) {
             tableModel.setValueAt(day, i / 7, i % 7);
             ++i;
+        }
+
+        highlightCurrentDate();
+    }
+
+    private void highlightCurrentDate() {
+        int today = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+
+        if (currentYear == Calendar.getInstance().get(Calendar.YEAR) && currentMonth == Calendar.getInstance().get(Calendar.MONTH)) {
+            for (int row = 0; row < tableModel.getRowCount(); row++) {
+                for (int col = 0; col < tableModel.getColumnCount(); col++) {
+                    Object value = tableModel.getValueAt(row, col);
+                    if (value instanceof Integer && (int) value == today) {
+                        JTable table = (JTable) ((JScrollPane) getComponent(1)).getViewport().getView();
+                        table.changeSelection(row, col, false, false);
+                        return;
+                    }
+                }
+            }
         }
     }
 
