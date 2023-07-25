@@ -1,0 +1,29 @@
+{
+  "todoItems": [
+    {
+      "isDone": false,
+      "description": "",
+      "priority": "NONE"
+    },
+    {
+      "isDone": false,
+      "description": "",
+      "priority": "NONE"
+    },
+    {
+      "isDone": false,
+      "description": "",
+      "priority": "NONE"
+    },
+    {
+      "isDone": false,
+      "description": "",
+      "priority": "NONE"
+    },
+    {
+      "isDone": false,
+      "description": "",
+      "priority": "NONE"
+    }
+  ]
+}
