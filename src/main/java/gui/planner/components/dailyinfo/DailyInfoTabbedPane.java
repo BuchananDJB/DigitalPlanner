@@ -95,6 +95,8 @@ public class DailyInfoTabbedPane extends JTabbedPane {
         closeTabMenuItem.addActionListener(e -> closeTab(index));
         deleteTabMenuItem.addActionListener(e -> deleteTab(index));
 
+        // TODO: add option to open a closed (but not deleted) tab
+
         popupMenu.add(closeTabMenuItem);
         popupMenu.add(deleteTabMenuItem);
 
@@ -115,6 +117,8 @@ public class DailyInfoTabbedPane extends JTabbedPane {
                 DailyInfoSplitPane splitPane = (DailyInfoSplitPane) getComponentAt(index);
                 dailyInfoSplitPanes.remove(splitPane);
                 removeTabAt(index);
+
+                // TODO: AccessDeniedException occurs when attempting to delete specified directory. Solve!
                 DataTools.deleteDirectoryAndAllContents(Constants.DAILY_INFO_DIRECTORY + pathFormattedDate + "/" + tabName);
             }
         }

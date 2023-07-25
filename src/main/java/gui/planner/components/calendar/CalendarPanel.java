@@ -11,6 +11,8 @@ import java.util.*;
 
 public class CalendarPanel extends JPanel {
 
+    // TODO: modify this class so that dates with data associated with them are bolded
+
     private final Calendar calendar;
     private final JLabel monthYearLabel;
     private final JButton prevButton;
