@@ -2,7 +2,7 @@
   "todoItems": [
     {
       "isDone": false,
-      "description": "general-incomplete",
+      "description": "",
       "priority": "NONE"
     }
   ]

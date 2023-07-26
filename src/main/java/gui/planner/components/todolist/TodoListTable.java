@@ -16,27 +16,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class TodoListTable extends JTable implements SaveItem {
+public class TodoListTable extends JTable implements SaveItem, TaskStatusListener {
+
+    private final String[] columnNames = {"Done", "Description", "Priority"};
+    private final String title;
+    private final String directoryPath;
+    private final boolean isCompleteTable;
 
     private boolean initialSetupComplete = false;
     private boolean tableChanged = false;
-    private final String title;
-    private final String directoryPath;
-    private final String[] columnNames = {"Done", "Description", "Priority"};
+    private TaskStatusListener taskStatusListener;
 
-    public TodoListTable(String title, String directoryPath, TodoItemList todoItemList) {
-        this(title, directoryPath);
+    public TodoListTable(String title, boolean isCompleteTable, String directoryPath, TodoItemList todoItemList) {
+        this(title, isCompleteTable, directoryPath);
         populateTable(todoItemList);
         if (getRowCount() == 0) {
             addEmptyRow();
         }
     }
 
-    public TodoListTable(String title, String directoryPath) {
+    public TodoListTable(String title, boolean isCompleteTable, String directoryPath) {
         super();
 
         this.title = title;
         this.directoryPath = directoryPath;
+        this.isCompleteTable = isCompleteTable;
         setModel(createTableModel());
 
         JComboBox<TaskPriority> priorityComboBox = new JComboBox<>(TaskPriority.values());
@@ -44,6 +48,7 @@ public class TodoListTable extends JTable implements SaveItem {
 
         adjustColumnWidths();
         enableColumnSorting();
+
         TableColumn descriptionColumn = getColumnModel().getColumn(1);
         descriptionColumn.setCellRenderer(new DescriptionCellRenderer());
 
@@ -67,24 +72,30 @@ public class TodoListTable extends JTable implements SaveItem {
         saveManager.registerSaveItem(this);
     }
 
-    public void populateTable(TodoItemList todoItemList) {
+    private void populateTable(TodoItemList todoItemList) {
         DefaultTableModel model = (DefaultTableModel) getModel();
         model.setRowCount(0);
 
         if (todoItemList != null) {
             for (TodoItem todoItem : todoItemList.getTodoItems()) {
-                Object[] rowData = new Object[model.getColumnCount()];
-                rowData[0] = todoItem.isDone();
-                rowData[1] = todoItem.getDescription();
-                rowData[2] = todoItem.getPriority();
-                model.addRow(rowData);
+                addRowWithData(todoItem);
             }
         }
 
         initialSetupComplete = true;
     }
 
+    private void addRowWithData(TodoItem todoItem) {
+        DefaultTableModel model = (DefaultTableModel) getModel();
+        Object[] rowData = new Object[model.getColumnCount()];
+        rowData[0] = todoItem.isDone();
+        rowData[1] = todoItem.getDescription();
+        rowData[2] = todoItem.getPriority();
+        model.addRow(rowData);
+    }
+
     private static class DescriptionCellRenderer extends DefaultTableCellRenderer {
+
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             Component renderer = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -97,7 +108,6 @@ public class TodoListTable extends JTable implements SaveItem {
             return renderer;
         }
     }
-
     private DefaultTableModel createTableModel() {
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -128,7 +138,37 @@ public class TodoListTable extends JTable implements SaveItem {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
+                    // TODO: have right clicks highlight the clicked row, then have delete item functionality
+                    //  delete all selected items, not just the clicked item
                     createRightClickMenu(e).show(TodoListTable.this, e.getX(), e.getY());
+                }
+            }
+        });
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int clickedRow = rowAtPoint(e.getPoint());
+                int clickedColumn = columnAtPoint(e.getPoint());
+
+                // Check if the click is on the "Done" column (column 0)
+                if (clickedRow >= 0 && clickedColumn == 0) {
+                    // Get the row data from the clicked row
+                    boolean isDone = (boolean) getValueAt(clickedRow, 0);
+                    String description = (String) getValueAt(clickedRow, 1);
+                    TaskPriority taskPriority = (TaskPriority) getValueAt(clickedRow, 2);
+                    TodoItem todoItem = new TodoItem(isDone, description, taskPriority);
+
+                    // TODO: Don't move empty rows to the other table
+                    if (taskStatusListener != null) {
+                        taskStatusListener.toggleTaskStatus(todoItem);
+                        ((DefaultTableModel) getModel()).removeRow(clickedRow);
+
+                        // Ensure the incomplete table always has at least one row
+                        if (!isCompleteTable && getRowCount() == 0) {
+                            addEmptyRow();
+                        }
+                    }
                 }
             }
         });
@@ -146,7 +186,7 @@ public class TodoListTable extends JTable implements SaveItem {
         deleteTodoItem.addActionListener(e -> {
             if (clickedRow != -1) {
                 ((DefaultTableModel) getModel()).removeRow(clickedRow);
-                if (getRowCount() == 0) {
+                if (!isCompleteTable && getRowCount() == 0) {
                     addEmptyRow();
                 }
             }
@@ -223,6 +263,15 @@ public class TodoListTable extends JTable implements SaveItem {
         }
 
         return new TodoItemList(todoItemList);
+    }
+
+    @Override
+    public void toggleTaskStatus(TodoItem todoItem) {
+        addRowWithData(todoItem);
+    }
+
+    public void registerTaskStatusListener(TaskStatusListener taskStatusListener) {
+        this.taskStatusListener = taskStatusListener;
     }
 
     @Override

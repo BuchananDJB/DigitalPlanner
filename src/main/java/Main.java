@@ -22,6 +22,7 @@ public class Main {
     }
 
     private static void initializeGUI() {
+        // TODO: figure out how to make it purple
         FlatDarkLaf.setup();
         initializeJFrame();
     }

@@ -1,8 +1,13 @@
 {
   "todoItems": [
     {
-      "isDone": false,
+      "isDone": true,
       "description": "social-complete",
+      "priority": "NONE"
+    },
+    {
+      "isDone": true,
+      "description": "social-incomplete",
       "priority": "NONE"
     }
   ]
