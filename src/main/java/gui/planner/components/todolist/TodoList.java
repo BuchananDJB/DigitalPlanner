@@ -6,6 +6,8 @@ import tools.DataTools;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TodoList extends JTabbedPane {
 
@@ -76,6 +78,14 @@ public class TodoList extends JTabbedPane {
         panel.setBorder(BorderFactory.createTitledBorder(todoListTable.getTitle()));
 
         return panel;
+    }
+
+    public List<TodoListTable> getAllTodoListTables() {
+        return new ArrayList<>(List.of(
+                generalIncompleteTodoListTable,
+                generalCompleteTodoListTable,
+                socialIncompleteTodoListTable,
+                socialCompleteTodoListTable));
     }
 
 }

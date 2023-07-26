@@ -1,7 +1,11 @@
 package gui.planner.components.dailyinfo;
 
+import gui.planner.components.notes.NotesTextArea;
+import gui.planner.components.todolist.TodoList;
+import gui.planner.components.todolist.TodoListTable;
 import tools.Constants;
 import tools.DataTools;
+import tools.savemanager.SaveManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,16 +15,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DailyInfoTabbedPane extends JTabbedPane {
 
-    private final List<DailyInfoSplitPane> dailyInfoSplitPanes;
-    private int addTabButtonIndex = 0;
+    private final Map<String, DailyInfoSplitPane> closedTabs;
     private final String pathFormattedDate;
+    private final int addTabButtonIndex = 0;
 
     public DailyInfoTabbedPane(String pathFormattedDate) {
-        this.dailyInfoSplitPanes = new ArrayList<>();
+        this.closedTabs = new HashMap<>();
         this.pathFormattedDate = pathFormattedDate;
 
         addTabMouseListener();
@@ -28,6 +34,62 @@ public class DailyInfoTabbedPane extends JTabbedPane {
         this.setTabComponentAt(0, createAddTabButton());
 
         initializeTabsFromDirectories();
+    }
+
+    private void addTabMouseListener() {
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    int index = DailyInfoTabbedPane.this.indexAtLocation(e.getX(), e.getY());
+                    JPopupMenu popupMenu = createPopupMenu(index);
+                    popupMenu.show(DailyInfoTabbedPane.this, e.getX(), e.getY());
+
+                }
+            }
+        });
+    }
+
+    private JPopupMenu createPopupMenu(int index) {
+        JPopupMenu popupMenu = new JPopupMenu();
+
+        if (index != -1 && index != addTabButtonIndex) {
+            JMenuItem closeTabMenuItem = new JMenuItem("Close Tab");
+            closeTabMenuItem.addActionListener(e -> closeTab(index));
+            popupMenu.add(closeTabMenuItem);
+
+            JMenuItem deleteTabMenuItem = new JMenuItem("Delete Tab");
+            deleteTabMenuItem.addActionListener(e -> deleteTab(index));
+            popupMenu.add(deleteTabMenuItem);
+        }
+
+        List<String> closedTabNames = new ArrayList<>(closedTabs.keySet());
+        if (!closedTabNames.isEmpty()) {
+            JMenu reopenMenu = new JMenu("Reopen Tab");
+
+            for (String tabName : closedTabNames) {
+                JMenuItem reopenMenuItem = new JMenuItem(tabName);
+                reopenMenuItem.addActionListener(e -> reopenTab(tabName));
+                reopenMenu.add(reopenMenuItem);
+            }
+
+            popupMenu.add(reopenMenu);
+        }
+
+        return popupMenu;
+    }
+
+    private JButton createAddTabButton() {
+        JButton addButton = new JButton("+");
+        addButton.setFocusable(false);
+        addButton.setPreferredSize(new Dimension(20, 20));
+        addButton.addActionListener(e -> {
+            String tabName = JOptionPane.showInputDialog(this, "Enter tab name:");
+            if (!DataTools.isEmptyString(tabName)) {
+                addNewTab(tabName);
+            }
+        });
+        return addButton;
     }
 
     private void initializeTabsFromDirectories() {
@@ -54,59 +116,23 @@ public class DailyInfoTabbedPane extends JTabbedPane {
         DataTools.createDirectory(Constants.DAILY_INFO_DIRECTORY + pathFormattedDate + "/" + title);
         DailyInfoSplitPane dailyInfoSplitPane =
                 new DailyInfoSplitPane(Constants.DAILY_INFO_DIRECTORY + pathFormattedDate + "/" + title);
-        dailyInfoSplitPanes.add(dailyInfoSplitPane);
         this.addTab(title, dailyInfoSplitPane);
         this.setSelectedIndex(this.getTabCount() - 1);
     }
 
-    private JButton createAddTabButton() {
-        JButton addButton = new JButton("+");
-        addButton.setFocusable(false);
-        addButton.setPreferredSize(new Dimension(20, 20));
-        addButton.addActionListener(e -> {
-            String tabName = JOptionPane.showInputDialog(this, "Enter tab name:");
-            if (!DataTools.isEmptyString(tabName)) {
-                addNewTab(tabName);
-            }
-        });
-        return addButton;
-    }
-
-    private void addTabMouseListener() {
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (SwingUtilities.isRightMouseButton(e)) {
-                    int index = DailyInfoTabbedPane.this.indexAtLocation(e.getX(), e.getY());
-                    if (index >= 0 && index != addTabButtonIndex) {
-                        JPopupMenu popupMenu = createPopupMenu(index);
-                        popupMenu.show(DailyInfoTabbedPane.this, e.getX(), e.getY());
-                    }
-                }
-            }
-        });
-    }
-
-    private JPopupMenu createPopupMenu(int index) {
-        JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem closeTabMenuItem = new JMenuItem("Close Tab");
-        JMenuItem deleteTabMenuItem = new JMenuItem("Delete Tab");
-
-        closeTabMenuItem.addActionListener(e -> closeTab(index));
-        deleteTabMenuItem.addActionListener(e -> deleteTab(index));
-
-        // TODO: add option to open a closed (but not deleted) tab
-
-        popupMenu.add(closeTabMenuItem);
-        popupMenu.add(deleteTabMenuItem);
-
-        return popupMenu;
-    }
-
     private void closeTab(int index) {
         if (index >= 0 && index < getTabCount()) {
+            String tabName = getTitleAt(index);
+            DailyInfoSplitPane tabComponent = (DailyInfoSplitPane) getComponentAt(index);
+            closedTabs.putIfAbsent(tabName, tabComponent);
             removeTabAt(index);
         }
+    }
+
+    private void reopenTab(String tabName) {
+        DailyInfoSplitPane dailyInfoSplitPane = closedTabs.remove(tabName);
+        this.addTab(tabName, dailyInfoSplitPane);
+        this.setSelectedIndex(this.getTabCount() - 1);
     }
 
     private void deleteTab(int index) {
@@ -114,14 +140,23 @@ public class DailyInfoTabbedPane extends JTabbedPane {
             String tabName = getTitleAt(index);
             int choice = showConfirmationDialog(tabName);
             if (choice == JOptionPane.YES_OPTION) {
-                DailyInfoSplitPane splitPane = (DailyInfoSplitPane) getComponentAt(index);
-                dailyInfoSplitPanes.remove(splitPane);
-                removeTabAt(index);
-
-                // TODO: AccessDeniedException occurs when attempting to delete specified directory. Solve!
                 DataTools.deleteDirectoryAndAllContents(Constants.DAILY_INFO_DIRECTORY + pathFormattedDate + "/" + tabName);
+                unregisterSaveItems(index);
+                removeTabAt(index);
             }
         }
+    }
+
+    private void unregisterSaveItems(int index) {
+        SaveManager saveManager = new SaveManager();
+
+        DailyInfoSplitPane dailyInfoSplitPane = (DailyInfoSplitPane) getComponentAt(index);
+        NotesTextArea notesTextArea = dailyInfoSplitPane.getDailyNotesTextArea();
+        saveManager.unregisterSaveItem(notesTextArea);
+
+        TodoList todoList = dailyInfoSplitPane.getDailyTodoList();
+        List<TodoListTable> todoListTables = todoList.getAllTodoListTables();
+        todoListTables.forEach(saveManager::unregisterSaveItem);
     }
 
     private int showConfirmationDialog(String tabName) {
