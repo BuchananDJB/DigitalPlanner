@@ -1,3 +1,9 @@
 {
-  "todoItems": []
+  "todoItems": [
+    {
+      "isDone": true,
+      "description": "complete",
+      "priority": "NONE"
+    }
+  ]
 }

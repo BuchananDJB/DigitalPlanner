@@ -3,11 +3,6 @@
     {
       "isDone": false,
       "description": "",
-      "priority": "LOW"
-    },
-    {
-      "isDone": false,
-      "description": "1",
       "priority": "NONE"
     }
   ]

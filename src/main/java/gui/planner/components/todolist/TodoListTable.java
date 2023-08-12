@@ -160,7 +160,7 @@ public class TodoListTable extends JTable implements SaveItem, TaskStatusListene
                     TodoItem todoItem = new TodoItem(isDone, description, taskPriority);
 
                     // TODO: Don't move empty rows to the other table
-                    if (taskStatusListener != null) {
+                    if (!DataTools.isEmptyString(description) && taskStatusListener != null) {
                         taskStatusListener.toggleTaskStatus(todoItem);
                         ((DefaultTableModel) getModel()).removeRow(clickedRow);
 
