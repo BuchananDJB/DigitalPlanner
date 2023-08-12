@@ -138,8 +138,10 @@ public class TodoListTable extends JTable implements SaveItem, TaskStatusListene
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    // TODO: have right clicks highlight the clicked row, then have delete item functionality
-                    //  delete all selected items, not just the clicked item
+                    int clickedRow = rowAtPoint(e.getPoint());
+                    if (!isRowSelected(clickedRow)) {
+                        setRowSelectionInterval(clickedRow, clickedRow);
+                    }
                     createRightClickMenu(e).show(TodoListTable.this, e.getX(), e.getY());
                 }
             }
@@ -159,7 +161,6 @@ public class TodoListTable extends JTable implements SaveItem, TaskStatusListene
                     TaskPriority taskPriority = (TaskPriority) getValueAt(clickedRow, 2);
                     TodoItem todoItem = new TodoItem(isDone, description, taskPriority);
 
-                    // TODO: Don't move empty rows to the other table
                     if (!DataTools.isEmptyString(description) && taskStatusListener != null) {
                         taskStatusListener.toggleTaskStatus(todoItem);
                         ((DefaultTableModel) getModel()).removeRow(clickedRow);
@@ -184,8 +185,12 @@ public class TodoListTable extends JTable implements SaveItem, TaskStatusListene
 
         JMenuItem deleteTodoItem = new JMenuItem("Delete Todo Item");
         deleteTodoItem.addActionListener(e -> {
-            if (clickedRow != -1) {
-                ((DefaultTableModel) getModel()).removeRow(clickedRow);
+            int[] selectedRows = getSelectedRows();
+            if (selectedRows.length > 0) {
+                DefaultTableModel model = (DefaultTableModel) getModel();
+                for (int i = selectedRows.length - 1; i >= 0; i--) {
+                    model.removeRow(selectedRows[i]);
+                }
                 if (!isCompleteTable && getRowCount() == 0) {
                     addEmptyRow();
                 }

@@ -2,12 +2,17 @@
   "todoItems": [
     {
       "isDone": false,
-      "description": "",
-      "priority": "LOW"
+      "description": "Item 1",
+      "priority": "NONE"
     },
     {
       "isDone": false,
-      "description": "1",
+      "description": "Item 2",
+      "priority": "NONE"
+    },
+    {
+      "isDone": false,
+      "description": "",
       "priority": "NONE"
     }
   ]
