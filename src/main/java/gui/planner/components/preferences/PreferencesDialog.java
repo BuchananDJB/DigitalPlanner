@@ -17,24 +17,26 @@ public class PreferencesDialog extends JDialog {
     public PreferencesDialog(JFrame parentFrame) {
         super(parentFrame, "Preferences", true);
 
-        JPanel contentPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+        JPanel contentPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(10, 10, 5, 10);
+
         JLabel themeLabel = new JLabel("Theme:");
+        contentPanel.add(themeLabel, gbc);
+
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         themeComboBox = new JComboBox<>(themes);
         themeComboBox.addActionListener(e -> applyTheme());
+        contentPanel.add(themeComboBox, gbc);
 
-        // TODO: Determine why this JComboBox is not updating the displayed value as expected
-//        GUIInitializer.getCurrentTheme().ifPresent(theme -> {
-//            themeComboBox.setSelectedItem(theme);
-//            themeComboBox.revalidate();
-//            themeComboBox.repaint();
-//        });
-
+        gbc.gridy++;
+        gbc.insets = new Insets(5, 10, 10, 10);
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(e -> dispose());
-
-        contentPanel.add(themeLabel);
-        contentPanel.add(themeComboBox);
-        contentPanel.add(closeButton);
+        contentPanel.add(closeButton, gbc);
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -58,5 +60,4 @@ public class PreferencesDialog extends JDialog {
             DataTools.writeStringsToFile(preferences, Constants.PREFERENCES_PATH);
         }
     }
-
 }
