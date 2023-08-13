@@ -2,7 +2,7 @@
   "todoItems": [
     {
       "isDone": false,
-      "description": "BoldTest",
+      "description": "bolding test",
       "priority": "NONE"
     }
   ]

@@ -1,1 +1,1 @@
-theme:ArcDarkOrange
+theme:SolarizedLight

@@ -6,6 +6,7 @@ import gui.tools.GUITools;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -152,6 +153,41 @@ public class DataTools {
     private static boolean isEmptyDirectory(File directory) {
         File[] files = directory.listFiles();
         return files == null || files.length == 0;
+    }
+
+    public static List<String> listSubdirectories(String directoryPath) {
+        List<String> subdirectories = new ArrayList<>();
+
+        File directory = new File(directoryPath);
+        if (directory.exists() && directory.isDirectory()) {
+            File[] subdirectoryFiles = directory.listFiles(File::isDirectory);
+            if (subdirectoryFiles != null) {
+                for (File subdirectory : subdirectoryFiles) {
+                    subdirectories.add(subdirectory.getName());
+                }
+            }
+        }
+        return subdirectories;
+    }
+
+    public static boolean directoryAndFilesAreEmpty(String directoryPath) {
+        Path path = Paths.get(directoryPath);
+
+        if (!Files.exists(path) || !Files.isDirectory(path)) {
+            return true;
+        }
+
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
+            for (Path file : directoryStream) {
+                if (!Files.isDirectory(file) && Files.size(file) > 0) {
+                    return false;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            GUITools.displayDialog("Error occurred while parsing directories and files.");
+        }
+        return true;
     }
 
     public static <T> String toJson(T object) {
