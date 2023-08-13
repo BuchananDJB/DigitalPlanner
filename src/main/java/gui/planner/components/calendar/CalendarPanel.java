@@ -156,7 +156,6 @@ public class CalendarPanel extends JPanel {
             }
         });
 
-        // Add event listener to table
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -219,7 +218,6 @@ public class CalendarPanel extends JPanel {
     }
 
     private void boldDatesInMonth() {
-        // Bold the dates that have data
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         int numberOfDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
         for (int day = 1; day <= numberOfDays; ++day) {
