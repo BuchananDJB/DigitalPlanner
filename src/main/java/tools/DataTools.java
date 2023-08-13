@@ -8,13 +8,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class DataTools {
-    public static Stream<?> stream(Collection<?> collection) {
+    public static <T> Stream<T> stream(Collection<T> collection) {
         return collection != null ? collection.stream() : Stream.empty();
     }
 
@@ -40,6 +39,20 @@ public class DataTools {
         return fileContents;
     }
 
+    public static List<String> readFileAsListOfStrings(String filePath) {
+        List<String> fileContents = new ArrayList<>();
+        try {
+            if (!Files.exists(Path.of(filePath))) {
+                Files.createFile(Path.of(filePath));
+            }
+            fileContents = Files.readAllLines(Path.of(filePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+            GUITools.displayDialog("An error occurred while reading contents of file: " + filePath);
+        }
+        return fileContents;
+    }
+
     public static void writeStringToFile(String contents, String filePath) {
         try {
             Path path = Paths.get(filePath);
@@ -51,6 +64,20 @@ public class DataTools {
         } catch (IOException e) {
             e.printStackTrace();
             GUITools.displayDialog("An error occurred while writing to file: " + filePath);
+        }
+    }
+
+    public static void writeStringsToFile(List<String> lines, String filePath) {
+        try {
+            Path path = Path.of(filePath);
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+            }
+
+            Files.write(path, lines, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+            GUITools.displayDialog("Error saving data to: " + filePath);
         }
     }
 

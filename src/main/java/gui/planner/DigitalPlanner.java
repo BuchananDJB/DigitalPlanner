@@ -4,11 +4,14 @@ import gui.planner.components.calendar.CalendarPanel;
 import gui.planner.components.calendar.DateSelectionListener;
 import gui.planner.components.dailyinfo.DailyInfo;
 import gui.planner.components.notes.NotesTextArea;
+import gui.planner.components.preferences.PreferencesDialog;
 import gui.planner.components.todolist.TodoList;
 import tools.Constants;
+import tools.savemanager.SaveManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -18,14 +21,44 @@ public class DigitalPlanner extends JFrame implements DateSelectionListener {
 
     private final TodoList generalTodoList;
     private final NotesTextArea generalNotesTextArea;
-    private DailyInfo currentDailyInfoPane;
-    private CalendarPanel calendarPanel;
+    private final JSplitPane upperSplitPane;
     private final Map<String, DailyInfo> dailyInfoMapByDate;
 
-    private final JSplitPane upperSplitPane;
+    private DailyInfo currentDailyInfoPane;
+    private CalendarPanel calendarPanel;
+
 
     public DigitalPlanner() {
         this.dailyInfoMapByDate = new HashMap<>();
+
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+
+        JMenuItem saveMenuItem = new JMenuItem("Save");
+        saveMenuItem.addActionListener(e -> {
+            SaveManager saveManager = new SaveManager();
+            saveManager.saveAllData();
+        });
+        fileMenu.add(saveMenuItem);
+
+        JMenuItem preferencesMenuItem = new JMenuItem("Preferences");
+        preferencesMenuItem.addActionListener(e -> {
+            PreferencesDialog preferencesDialog = new PreferencesDialog(this);
+            preferencesDialog.setVisible(true);
+            refreshUI();
+        });
+        fileMenu.add(preferencesMenuItem);
+
+        JMenuItem exitMenuItem = new JMenuItem("Exit");
+        exitMenuItem.addActionListener(e -> {
+            WindowEvent windowClosing = new WindowEvent(DigitalPlanner.this, WindowEvent.WINDOW_CLOSING);
+            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(windowClosing);
+        });
+
+        fileMenu.add(exitMenuItem);
+        menuBar.add(fileMenu);
+        setJMenuBar(menuBar);
+
         initializeCalendarPanel();
         this.generalTodoList = new TodoList(Constants.PLANNER_ROOT_DIRECTORY);
         JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, calendarPanel, generalTodoList);
@@ -44,8 +77,7 @@ public class DigitalPlanner extends JFrame implements DateSelectionListener {
         mainSplitPane.setDividerLocation(550);
         this.getContentPane().add(BorderLayout.CENTER, mainSplitPane);
 
-        validate();
-        repaint();
+        refreshUI();
     }
 
     private void initializeCalendarPanel() {
@@ -74,6 +106,10 @@ public class DigitalPlanner extends JFrame implements DateSelectionListener {
         upperSplitPane.setDividerLocation(dividerLocation);
         this.currentDailyInfoPane = newDailyInfoPane;
 
+        refreshUI();
+    }
+
+    private void refreshUI() {
         revalidate();
         repaint();
     }

@@ -60,6 +60,7 @@ public class TodoList extends JTabbedPane {
         this.generalIncompleteTodoListTable.registerTaskStatusListener(this.generalCompleteTodoListTable);
         this.generalCompleteTodoListTable.registerTaskStatusListener(this.generalIncompleteTodoListTable);
 
+
         TodoItemList socialCompleteList = createTodoItemList(todoListDirectory, Constants.SOCIAL_TODO_COMPLETE);
         this.socialCompleteTodoListTable =
                 new TodoListTable(SOCIAL + "-" + COMPLETE, true, todoListDirectory, socialCompleteList);
