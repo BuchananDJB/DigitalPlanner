@@ -67,6 +67,8 @@ public class DigitalPlanner extends JFrame implements DateSelectionListener {
         String todaysDateString = getTodaysDateString();
         DailyInfo dailyInfo = new DailyInfo(todaysDateString);
         dailyInfoMapByDate.putIfAbsent(todaysDateString, dailyInfo);
+
+        // TODO: add a tabbedPane that persists regardless of the date
         this.currentDailyInfoPane = dailyInfo;
         this.upperSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, currentDailyInfoPane);
         upperSplitPane.setDividerLocation(300);

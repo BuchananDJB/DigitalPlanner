@@ -17,6 +17,8 @@ public class NotesTextArea extends JTextArea implements SaveItem {
     private UndoManager undoManager;
     private final String directoryPath;
 
+    // TODO: Add scroll functionality
+
     public NotesTextArea(String directoryPath) {
         super();
         this.directoryPath = directoryPath;
