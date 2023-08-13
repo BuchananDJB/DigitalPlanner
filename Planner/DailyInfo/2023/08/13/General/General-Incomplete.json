@@ -1,9 +1,0 @@
-{
-  "todoItems": [
-    {
-      "isDone": false,
-      "description": "BoldTest",
-      "priority": "NONE"
-    }
-  ]
-}
