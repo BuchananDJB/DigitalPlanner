@@ -10,9 +10,9 @@ import java.util.List;
 
 public class PreferencesDialog extends JDialog {
 
-    private String[] themes = {"ArcDarkOrange", "CyanLight", "Dark", "DarkPurple",
+    private final String[] themes = {"ArcDarkOrange", "CyanLight", "Dark", "DarkPurple",
             "GradiantoMidnightBlue", "LightFlat", "MaterialPalenight", "SolarizedLight"};
-    private JComboBox<String> themeComboBox;
+    private final JComboBox<String> themeComboBox;
 
     public PreferencesDialog(JFrame parentFrame) {
         super(parentFrame, "Preferences", true);

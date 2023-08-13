@@ -5,8 +5,6 @@ import tools.savemanager.SaveItem;
 import tools.savemanager.SaveManager;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
@@ -26,23 +24,7 @@ public class NotesTextArea extends JTextArea implements SaveItem {
         this.setText(notesTextContent);
         setupUndoRedo();
         setupRightClickMenu();
-
-        getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                registerTextAreaSaveItem();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                registerTextAreaSaveItem();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                registerTextAreaSaveItem();
-            }
-        });
+        registerTextAreaSaveItem();
     }
 
     private void registerTextAreaSaveItem() {
@@ -145,6 +127,10 @@ public class NotesTextArea extends JTextArea implements SaveItem {
     @Override
     public void saveData() {
         String currentText = this.getText();
+        if (DataTools.isNullEmptyBlankString(currentText)) {
+            DataTools.deleteFile(directoryPath + "/" + NOTES_FILENAME);
+            return;
+        }
         DataTools.writeStringToFile(currentText, directoryPath + "/" + NOTES_FILENAME);
     }
 }

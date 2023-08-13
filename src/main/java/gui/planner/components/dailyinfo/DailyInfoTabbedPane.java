@@ -85,7 +85,7 @@ public class DailyInfoTabbedPane extends JTabbedPane {
         addButton.setPreferredSize(new Dimension(20, 20));
         addButton.addActionListener(e -> {
             String tabName = JOptionPane.showInputDialog(this, "Enter tab name:");
-            if (!DataTools.isEmptyString(tabName)) {
+            if (!DataTools.isNullEmptyBlankString(tabName)) {
                 addNewTab(tabName);
             }
         });
