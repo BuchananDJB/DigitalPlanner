@@ -2,8 +2,8 @@
   "todoItems": [
     {
       "isDone": false,
-      "description": "general-complete",
-      "priority": "MEDIUM"
+      "description": "",
+      "priority": "NONE"
     }
   ]
 }

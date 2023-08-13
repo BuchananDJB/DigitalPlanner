@@ -10,7 +10,7 @@ public class GUITools {
     }
 
     public static String prettyPrintDate(String date) {
-        if (DataTools.isEmptyString(date)) {
+        if (DataTools.isNullEmptyBlankString(date)) {
             return "00 Month 0000";
         }
 

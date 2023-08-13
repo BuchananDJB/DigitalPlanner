@@ -2,8 +2,8 @@
   "todoItems": [
     {
       "isDone": false,
-      "description": "",
-      "priority": "NONE"
+      "description": "uhhhh",
+      "priority": "LOW"
     }
   ]
 }

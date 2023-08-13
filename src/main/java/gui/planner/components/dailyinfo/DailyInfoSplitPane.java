@@ -24,4 +24,12 @@ public class DailyInfoSplitPane extends JSplitPane {
 
         this.setDividerLocation(350);
     }
+
+    public NotesTextArea getDailyNotesTextArea() {
+        return dailyNotesTextArea;
+    }
+
+    public TodoList getDailyTodoList() {
+        return dailyTodoList;
+    }
 }

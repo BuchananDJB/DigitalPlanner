@@ -3,6 +3,7 @@ package tools;
 public class Constants {
     public static final String PLANNER_ROOT_DIRECTORY = "Planner/";
 
+    public static final String PREFERENCES_PATH = PLANNER_ROOT_DIRECTORY + "preferences.txt";
     public static final String GENERAL_NOTES_PATH = PLANNER_ROOT_DIRECTORY + "notes.txt";
     public static final String GENERAL_TODO_COMPLETE = "General-Complete.json";
     public static final String GENERAL_TODO_INCOMPLETE = "General-Incomplete.json";

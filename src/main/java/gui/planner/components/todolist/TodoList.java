@@ -6,6 +6,8 @@ import tools.DataTools;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TodoList extends JTabbedPane {
 
@@ -49,19 +51,26 @@ public class TodoList extends JTabbedPane {
     private void initializeTodoListTablesFromFiles() {
         TodoItemList generalCompleteList = createTodoItemList(todoListDirectory, Constants.GENERAL_TODO_COMPLETE);
         this.generalCompleteTodoListTable =
-                new TodoListTable(GENERAL + "-" + COMPLETE, todoListDirectory, generalCompleteList);
+                new TodoListTable(GENERAL + "-" + COMPLETE, true, todoListDirectory, generalCompleteList);
 
         TodoItemList generalIncompleteList = createTodoItemList(todoListDirectory, Constants.GENERAL_TODO_INCOMPLETE);
         this.generalIncompleteTodoListTable =
-                new TodoListTable(GENERAL + "-" + INCOMPLETE, todoListDirectory, generalIncompleteList);
+                new TodoListTable(GENERAL + "-" + INCOMPLETE, false, todoListDirectory, generalIncompleteList);
+
+        this.generalIncompleteTodoListTable.registerTaskStatusListener(this.generalCompleteTodoListTable);
+        this.generalCompleteTodoListTable.registerTaskStatusListener(this.generalIncompleteTodoListTable);
+
 
         TodoItemList socialCompleteList = createTodoItemList(todoListDirectory, Constants.SOCIAL_TODO_COMPLETE);
         this.socialCompleteTodoListTable =
-                new TodoListTable(SOCIAL + "-" + COMPLETE, todoListDirectory, socialCompleteList);
+                new TodoListTable(SOCIAL + "-" + COMPLETE, true, todoListDirectory, socialCompleteList);
 
         TodoItemList socialIncompleteList = createTodoItemList(todoListDirectory, Constants.SOCIAL_TODO_INCOMPLETE);
         this.socialIncompleteTodoListTable =
-                new TodoListTable(SOCIAL + "-" + INCOMPLETE, todoListDirectory, socialIncompleteList);
+                new TodoListTable(SOCIAL + "-" + INCOMPLETE, false, todoListDirectory, socialIncompleteList);
+
+        this.socialIncompleteTodoListTable.registerTaskStatusListener(this.socialCompleteTodoListTable);
+        this.socialCompleteTodoListTable.registerTaskStatusListener(this.socialIncompleteTodoListTable);
     }
 
     private TodoItemList createTodoItemList(String todoListFolderPath, String fileName) {
@@ -76,6 +85,14 @@ public class TodoList extends JTabbedPane {
         panel.setBorder(BorderFactory.createTitledBorder(todoListTable.getTitle()));
 
         return panel;
+    }
+
+    public List<TodoListTable> getAllTodoListTables() {
+        return new ArrayList<>(List.of(
+                generalIncompleteTodoListTable,
+                generalCompleteTodoListTable,
+                socialIncompleteTodoListTable,
+                socialCompleteTodoListTable));
     }
 
 }

@@ -1,5 +1,8 @@
 package gui.planner.components.calendar;
 
+import tools.Constants;
+import tools.DataTools;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -7,11 +10,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.*;
 
 public class CalendarPanel extends JPanel {
-
-    // TODO: modify this class so that dates with data associated with them are bolded
 
     private final Calendar calendar;
     private final JLabel monthYearLabel;
@@ -70,6 +73,14 @@ public class CalendarPanel extends JPanel {
         };
     }
 
+    public void goToToday() {
+        Calendar today = Calendar.getInstance();
+        calendar.setTime(today.getTime());
+        updateMonth();
+        selectedDate.setTime(today.getTime());
+        notifyDateSelectionListener();
+    }
+
     private JButton createNextButton() {
         JButton nextButton = new JButton("->");
         addMonthButtonListener(nextButton, 1);
@@ -85,6 +96,7 @@ public class CalendarPanel extends JPanel {
     private void addMonthButtonListener(JButton button, int amount) {
         button.addActionListener(listener -> {
             calendar.add(Calendar.MONTH, amount);
+            selectedDate.setTime(calendar.getTime());
             updateMonth();
         });
     }
@@ -113,6 +125,18 @@ public class CalendarPanel extends JPanel {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if (value instanceof Integer) {
+                    Calendar cellDate = (Calendar) selectedDate.clone();
+                    cellDate.set(Calendar.DAY_OF_MONTH, (int) value);
+
+                    if (hasDataForDate(cellDate)) {
+                        Font originalFont = component.getFont();
+                        Font boldFont = originalFont.deriveFont(originalFont.getStyle() | Font.BOLD);
+                        component.setFont(boldFont);
+                    }
+                }
+
                 if (isSelected) {
                     if (row == table.getSelectedRow() && column == table.getSelectedColumn()) {
                         component.setBackground(table.getSelectionBackground());
@@ -141,6 +165,8 @@ public class CalendarPanel extends JPanel {
                 if (row >= 0 && column >= 0) {
                     int day = (int) table.getValueAt(row, column);
                     selectedDate.set(Calendar.DAY_OF_MONTH, day);
+                    selectedDate.set(Calendar.MONTH, currentMonth);
+                    selectedDate.set(Calendar.YEAR, currentYear);
                     notifyDateSelectionListener();
                 }
             }
@@ -149,17 +175,8 @@ public class CalendarPanel extends JPanel {
         return new JScrollPane(table);
     }
 
-    public void goToToday() {
-        Calendar today = Calendar.getInstance();
-        calendar.setTime(today.getTime());
-        updateMonth();
-        selectedDate.setTime(today.getTime());
-        notifyDateSelectionListener();
-    }
-
     private void updateMonth() {
         calendar.set(Calendar.DAY_OF_MONTH, 1);
-
         currentMonth = calendar.get(Calendar.MONTH);
         currentYear = calendar.get(Calendar.YEAR);
 
@@ -181,6 +198,7 @@ public class CalendarPanel extends JPanel {
         }
 
         highlightCurrentDate();
+        boldDatesInMonth();
     }
 
     private void highlightCurrentDate() {
@@ -197,6 +215,46 @@ public class CalendarPanel extends JPanel {
                     }
                 }
             }
+        }
+    }
+
+    private void boldDatesInMonth() {
+        // Bold the dates that have data
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        int numberOfDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        for (int day = 1; day <= numberOfDays; ++day) {
+            calendar.set(Calendar.DAY_OF_MONTH, day);
+            styleDate((Calendar) calendar.clone(), hasDataForDate(calendar)); // Bold
+        }
+    }
+
+    private boolean hasDataForDate(Calendar date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        String dateString = dateFormat.format(date.getTime());
+
+        String dateDirectory = Constants.DAILY_INFO_DIRECTORY + dateString;
+        List<String> dateTabNames = DataTools.listSubdirectories(dateDirectory);
+        for (String tabName : dateTabNames) {
+            if (!DataTools.directoryAndFilesAreEmpty(dateDirectory + "/" + tabName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void styleDate(Calendar date, boolean bold) {
+        int row = date.get(Calendar.WEEK_OF_MONTH) - 1;
+        int col = date.get(Calendar.DAY_OF_WEEK) - 1;
+
+        JTable table = (JTable) ((JScrollPane) getComponent(1)).getViewport().getView();
+        Component cellRenderer = table.getDefaultRenderer(Object.class).getTableCellRendererComponent(table, null, false, false, row, col);
+
+        if (cellRenderer instanceof JLabel label) {
+            Font originalFont = label.getFont();
+            int style = originalFont.getStyle();
+            style = bold ? (style | Font.BOLD) : (style & ~Font.BOLD);
+            Font newFont = originalFont.deriveFont(style);
+            label.setFont(newFont);
         }
     }
 
