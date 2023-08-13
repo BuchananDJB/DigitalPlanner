@@ -3,9 +3,12 @@ package gui.planner.components.todolist;
 import gui.planner.models.TaskPriority;
 import gui.planner.models.TodoItem;
 import gui.planner.models.TodoItemList;
-import tools.DataTools;
 import tools.savemanager.SaveItem;
 import tools.savemanager.SaveManager;
+import tools.utilities.FileTools;
+import tools.utilities.JsonTools;
+import tools.utilities.StreamTools;
+import tools.utilities.StringTools;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -161,7 +164,7 @@ public class TodoListTable extends JTable implements SaveItem, TaskStatusListene
                     TaskPriority taskPriority = (TaskPriority) getValueAt(clickedRow, 2);
                     TodoItem todoItem = new TodoItem(isDone, description, taskPriority);
 
-                    if (!DataTools.isNullEmptyBlankString(description) && taskStatusListener != null) {
+                    if (!StringTools.isNullEmptyBlankString(description) && taskStatusListener != null) {
                         taskStatusListener.toggleTaskStatus(todoItem);
                         ((DefaultTableModel) getModel()).removeRow(clickedRow);
 
@@ -282,16 +285,16 @@ public class TodoListTable extends JTable implements SaveItem, TaskStatusListene
     @Override
     public void saveData() {
         TodoItemList todoItemList = getTodoItemList();
-        List<TodoItem> filteredItems = DataTools.stream(todoItemList.getTodoItems())
-                .filter(todoItem -> !DataTools.isNullEmptyBlankString(todoItem.getDescription()))
+        List<TodoItem> filteredItems = StreamTools.stream(todoItemList.getTodoItems())
+                .filter(todoItem -> !StringTools.isNullEmptyBlankString(todoItem.getDescription()))
                 .toList();
 
         if (filteredItems.isEmpty()) {
-            DataTools.deleteFile(directoryPath + "/" + title + ".json");
+            FileTools.deleteFile(directoryPath + "/" + title + ".json");
             return;
         }
 
-        String todoJson = DataTools.toJson(todoItemList);
-        DataTools.writeStringToFile(todoJson, directoryPath + "/" + title + ".json");
+        String todoJson = JsonTools.toJson(todoItemList);
+        FileTools.writeStringToFile(todoJson, directoryPath + "/" + title + ".json");
     }
 }

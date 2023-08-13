@@ -2,7 +2,8 @@ package gui.planner.components.todolist;
 
 import gui.planner.models.TodoItemList;
 import tools.Constants;
-import tools.DataTools;
+import tools.utilities.FileTools;
+import tools.utilities.JsonTools;
 
 import javax.swing.*;
 import java.awt.*;
@@ -74,8 +75,8 @@ public class TodoList extends JTabbedPane {
     }
 
     private TodoItemList createTodoItemList(String todoListFolderPath, String fileName) {
-        String todoJson = DataTools.readFileAsString(todoListFolderPath + "/" + fileName);
-        return DataTools.fromJson(todoJson, TodoItemList.class);
+        String todoJson = FileTools.readFileAsString(todoListFolderPath + "/" + fileName);
+        return JsonTools.fromJson(todoJson, TodoItemList.class);
     }
 
     private JPanel createPanel(TodoListTable todoListTable) {

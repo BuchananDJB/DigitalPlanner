@@ -1,8 +1,9 @@
 package gui.planner.components.notes;
 
-import tools.DataTools;
 import tools.savemanager.SaveItem;
 import tools.savemanager.SaveManager;
+import tools.utilities.FileTools;
+import tools.utilities.StringTools;
 
 import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
@@ -14,18 +15,16 @@ public class NotesScrollPane extends JScrollPane implements SaveItem {
 
     private final static String NOTES_FILENAME = "notes.txt";
 
-    private JTextArea textArea;
-    private UndoManager undoManager;
     private final String directoryPath;
-
-    // TODO: Add scroll functionality
+    private final JTextArea textArea;
+    private UndoManager undoManager;
 
     public NotesScrollPane(String directoryPath) {
         super();
         this.directoryPath = directoryPath;
         textArea = new JTextArea();
         this.setViewportView(textArea);
-        String notesTextContent = DataTools.readFileAsString(directoryPath + "/" + NOTES_FILENAME);
+        String notesTextContent = FileTools.readFileAsString(directoryPath + "/" + NOTES_FILENAME);
         textArea.setText(notesTextContent);
         setupUndoRedo();
         setupRightClickMenu();
@@ -132,10 +131,10 @@ public class NotesScrollPane extends JScrollPane implements SaveItem {
     @Override
     public void saveData() {
         String currentText = textArea.getText();
-        if (DataTools.isNullEmptyBlankString(currentText)) {
-            DataTools.deleteFile(directoryPath + "/" + NOTES_FILENAME);
+        if (StringTools.isNullEmptyBlankString(currentText)) {
+            FileTools.deleteFile(directoryPath + "/" + NOTES_FILENAME);
             return;
         }
-        DataTools.writeStringToFile(currentText, directoryPath + "/" + NOTES_FILENAME);
+        FileTools.writeStringToFile(currentText, directoryPath + "/" + NOTES_FILENAME);
     }
 }

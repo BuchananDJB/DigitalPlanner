@@ -1,7 +1,5 @@
-package tools;
+package tools.utilities;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import gui.tools.GUITools;
 
 import java.io.File;
@@ -10,21 +8,12 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Stream;
 
-public class DataTools {
-    public static <T> Stream<T> stream(Collection<T> collection) {
-        return collection != null ? collection.stream() : Stream.empty();
-    }
-
-    public static Stream<?> stream(Object[] array) {
-        return array != null ? Arrays.stream(array) : Stream.empty();
-    }
-
-    public static boolean isNullEmptyBlankString(String string) {
-        return string == null || string.isEmpty() || string.isBlank();
-    }
+public class FileTools {
 
     public static String readFileAsString(String filePath) {
         String fileContents = "";
@@ -190,17 +179,4 @@ public class DataTools {
         return true;
     }
 
-    public static <T> String toJson(T object) {
-        Gson gson = new Gson().newBuilder().setPrettyPrinting().create();
-        return gson.toJson(object);
-    }
-
-    public static <T> T fromJson(String jsonString, Class<T> tClass) {
-        try {
-            Gson gson = new Gson();
-            return gson.fromJson(jsonString, tClass);
-        } catch (JsonSyntaxException e) {
-            return null;
-        }
-    }
 }

@@ -1,7 +1,7 @@
 import gui.GUIInitializer;
 import tools.Constants;
-import tools.DataTools;
 import tools.savemanager.SaveManager;
+import tools.utilities.FileTools;
 
 public class Main {
 
@@ -23,6 +23,6 @@ public class Main {
     private static void saveAndShutdown() {
         saveManager.saveAllData();
         saveManager.shutdown();
-        DataTools.deleteEmptySubdirectories(Constants.DAILY_INFO_DIRECTORY);
+        FileTools.deleteEmptySubdirectories(Constants.DAILY_INFO_DIRECTORY);
     }
 }
