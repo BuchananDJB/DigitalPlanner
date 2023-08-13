@@ -10,20 +10,23 @@ import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.*;
 
-public class NotesTextArea extends JTextArea implements SaveItem {
+public class NotesScrollPane extends JScrollPane implements SaveItem {
 
     private final static String NOTES_FILENAME = "notes.txt";
 
+    private JTextArea textArea;
     private UndoManager undoManager;
     private final String directoryPath;
 
     // TODO: Add scroll functionality
 
-    public NotesTextArea(String directoryPath) {
+    public NotesScrollPane(String directoryPath) {
         super();
         this.directoryPath = directoryPath;
+        textArea = new JTextArea();
+        this.setViewportView(textArea);
         String notesTextContent = DataTools.readFileAsString(directoryPath + "/" + NOTES_FILENAME);
-        this.setText(notesTextContent);
+        textArea.setText(notesTextContent);
         setupUndoRedo();
         setupRightClickMenu();
         registerTextAreaSaveItem();
@@ -36,7 +39,7 @@ public class NotesTextArea extends JTextArea implements SaveItem {
 
     private void setupUndoRedo() {
         undoManager = new UndoManager();
-        getDocument().addUndoableEditListener(undoManager);
+        textArea.getDocument().addUndoableEditListener(undoManager);
 
         // Undo
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK), "undo");
@@ -105,7 +108,7 @@ public class NotesTextArea extends JTextArea implements SaveItem {
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
                     Dimension menuSize = popupMenu.getSize();
-                    Dimension notesTextAreaSize = NotesTextArea.this.getSize();
+                    Dimension notesTextAreaSize = NotesScrollPane.this.getSize();
 
                     int xPopup = e.getX();
                     int yPopup = e.getY();
@@ -128,7 +131,7 @@ public class NotesTextArea extends JTextArea implements SaveItem {
 
     @Override
     public void saveData() {
-        String currentText = this.getText();
+        String currentText = textArea.getText();
         if (DataTools.isNullEmptyBlankString(currentText)) {
             DataTools.deleteFile(directoryPath + "/" + NOTES_FILENAME);
             return;

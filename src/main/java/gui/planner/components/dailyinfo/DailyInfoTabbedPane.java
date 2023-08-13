@@ -1,6 +1,6 @@
 package gui.planner.components.dailyinfo;
 
-import gui.planner.components.notes.NotesTextArea;
+import gui.planner.components.notes.NotesScrollPane;
 import gui.planner.components.todolist.TodoList;
 import gui.planner.components.todolist.TodoListTable;
 import tools.Constants;
@@ -151,8 +151,8 @@ public class DailyInfoTabbedPane extends JTabbedPane {
         SaveManager saveManager = new SaveManager();
 
         DailyInfoSplitPane dailyInfoSplitPane = (DailyInfoSplitPane) getComponentAt(index);
-        NotesTextArea notesTextArea = dailyInfoSplitPane.getDailyNotesTextArea();
-        saveManager.unregisterSaveItem(notesTextArea);
+        NotesScrollPane notesScrollPane = dailyInfoSplitPane.getDailyNotesTextArea();
+        saveManager.unregisterSaveItem(notesScrollPane);
 
         TodoList todoList = dailyInfoSplitPane.getDailyTodoList();
         List<TodoListTable> todoListTables = todoList.getAllTodoListTables();

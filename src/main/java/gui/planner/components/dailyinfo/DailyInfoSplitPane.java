@@ -1,32 +1,32 @@
 package gui.planner.components.dailyinfo;
 
-import gui.planner.components.notes.NotesTextArea;
+import gui.planner.components.notes.NotesScrollPane;
 import gui.planner.components.todolist.TodoList;
 
 import javax.swing.*;
 
 public class DailyInfoSplitPane extends JSplitPane {
-    private final NotesTextArea dailyNotesTextArea;
+    private final NotesScrollPane dailyNotesScrollPane;
     private final TodoList dailyTodoList;
     private final String directoryPath;
 
     public DailyInfoSplitPane(String directoryPath) {
         super();
         this.directoryPath = directoryPath;
-        this.dailyNotesTextArea = new NotesTextArea(directoryPath);
-        dailyNotesTextArea.setBorder(BorderFactory.createTitledBorder("Notes"));
+        this.dailyNotesScrollPane = new NotesScrollPane(directoryPath);
+        dailyNotesScrollPane.setBorder(BorderFactory.createTitledBorder("Notes"));
 
         this.dailyTodoList = new TodoList(directoryPath);
 
         this.setOrientation(HORIZONTAL_SPLIT);
         this.setLeftComponent(dailyTodoList);
-        this.setRightComponent(dailyNotesTextArea);
+        this.setRightComponent(dailyNotesScrollPane);
 
         this.setDividerLocation(350);
     }
 
-    public NotesTextArea getDailyNotesTextArea() {
-        return dailyNotesTextArea;
+    public NotesScrollPane getDailyNotesTextArea() {
+        return dailyNotesScrollPane;
     }
 
     public TodoList getDailyTodoList() {
