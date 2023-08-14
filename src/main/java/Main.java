@@ -23,6 +23,6 @@ public class Main {
     private static void saveAndShutdown() {
         saveManager.saveAllData();
         saveManager.shutdown();
-        FileTools.deleteEmptySubdirectories(Constants.DAILY_INFO_DIRECTORY);
+        FileTools.deleteEmptySubdirectoriesAndFiles(Constants.TABVIEWS_DIRECTORY);
     }
 }

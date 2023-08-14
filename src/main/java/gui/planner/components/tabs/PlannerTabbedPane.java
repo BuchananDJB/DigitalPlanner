@@ -1,10 +1,6 @@
-package gui.planner.components.dailyinfo;
+package gui.planner.components.tabs;
 
-import gui.planner.components.notes.NotesScrollPane;
-import gui.planner.components.todolist.TodoList;
-import gui.planner.components.todolist.TodoListTable;
 import tools.Constants;
-import tools.savemanager.SaveManager;
 import tools.utilities.FileTools;
 import tools.utilities.StringTools;
 
@@ -20,17 +16,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DailyInfoTabbedPane extends JTabbedPane {
+public class PlannerTabbedPane extends JTabbedPane {
 
-    private final Map<String, DailyInfoSplitPane> closedTabs;
-    private final String pathFormattedDate;
-    private final String plannerTabTitle;
+    private final Map<String, PlannerTabView> closedTabs;
     private final int addTabButtonIndex = 0;
 
-    public DailyInfoTabbedPane(String plannerTabTitle, String pathFormattedDate) {
+    public PlannerTabbedPane() {
         this.closedTabs = new HashMap<>();
-        this.pathFormattedDate = pathFormattedDate;
-        this.plannerTabTitle = plannerTabTitle;
 
         addTabMouseListener();
         this.addTab("+", null);
@@ -44,9 +36,9 @@ public class DailyInfoTabbedPane extends JTabbedPane {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    int index = DailyInfoTabbedPane.this.indexAtLocation(e.getX(), e.getY());
+                    int index = PlannerTabbedPane.this.indexAtLocation(e.getX(), e.getY());
                     JPopupMenu popupMenu = createPopupMenu(index);
-                    popupMenu.show(DailyInfoTabbedPane.this, e.getX(), e.getY());
+                    popupMenu.show(PlannerTabbedPane.this, e.getX(), e.getY());
                 }
             }
         });
@@ -95,8 +87,7 @@ public class DailyInfoTabbedPane extends JTabbedPane {
     }
 
     private void initializeTabsFromDirectories() {
-        Path path = Path.of(Constants.TABVIEWS_DIRECTORY + plannerTabTitle + "/" + Constants.DAILY_INFO + pathFormattedDate);
-        FileTools.createDirectory(path.toString());
+        Path path = Path.of(Constants.TABVIEWS_DIRECTORY);
         try {
             List<String> directories = Files.list(path).map(Path::toString).toList();
             directories.forEach(directory -> {
@@ -115,27 +106,24 @@ public class DailyInfoTabbedPane extends JTabbedPane {
     }
 
     public void addNewTab(String title) {
-        FileTools.createDirectory(Constants.TABVIEWS_DIRECTORY + plannerTabTitle + "/" +
-                Constants.DAILY_INFO + pathFormattedDate + "/" + title);
-        DailyInfoSplitPane dailyInfoSplitPane =
-                new DailyInfoSplitPane(Constants.TABVIEWS_DIRECTORY + plannerTabTitle + "/" +
-                        Constants.DAILY_INFO + pathFormattedDate + "/" + title);
-        this.addTab(title, dailyInfoSplitPane);
+        FileTools.createDirectory(Constants.TABVIEWS_DIRECTORY + title);
+        PlannerTabView dailyInfoTabbedPane = new PlannerTabView(title);
+        this.addTab(title, dailyInfoTabbedPane);
         this.setSelectedIndex(this.getTabCount() - 1);
     }
 
     private void closeTab(int index) {
         if (index >= 0 && index < getTabCount()) {
             String tabName = getTitleAt(index);
-            DailyInfoSplitPane tabComponent = (DailyInfoSplitPane) getComponentAt(index);
-            closedTabs.putIfAbsent(tabName, tabComponent);
+            PlannerTabView plannerTabView = (PlannerTabView) getComponentAt(index);
+            closedTabs.putIfAbsent(tabName, plannerTabView);
             removeTabAt(index);
         }
     }
 
     private void reopenTab(String tabName) {
-        DailyInfoSplitPane dailyInfoSplitPane = closedTabs.remove(tabName);
-        this.addTab(tabName, dailyInfoSplitPane);
+        PlannerTabView plannerTabView = closedTabs.remove(tabName);
+        this.addTab(tabName, plannerTabView);
         this.setSelectedIndex(this.getTabCount() - 1);
     }
 
@@ -144,32 +132,17 @@ public class DailyInfoTabbedPane extends JTabbedPane {
             String tabName = getTitleAt(index);
             int choice = showConfirmationDialog(tabName);
             if (choice == JOptionPane.YES_OPTION) {
-                FileTools.deleteDirectoryAndAllContents(Constants.TABVIEWS_DIRECTORY + plannerTabTitle + "/" +
-                        Constants.DAILY_INFO + pathFormattedDate + "/" + tabName);
+                FileTools.deleteDirectoryAndAllContents(Constants.TABVIEWS_DIRECTORY + "/" + tabName);
                 unregisterSaveItems(index);
                 removeTabAt(index);
             }
         }
     }
 
-    public void unregisterAllSaveItems() {
-        for (int i = 0; i < getTabCount(); ++i) {
-            if (getComponentAt(i) instanceof DailyInfoSplitPane) {
-                unregisterSaveItems(i);
-            }
-        }
-    }
-
     private void unregisterSaveItems(int index) {
-        SaveManager saveManager = new SaveManager();
-
-        DailyInfoSplitPane dailyInfoSplitPane = (DailyInfoSplitPane) getComponentAt(index);
-        NotesScrollPane notesScrollPane = dailyInfoSplitPane.getDailyNotesScrollPane();
-        saveManager.unregisterSaveItem(notesScrollPane);
-
-        TodoList todoList = dailyInfoSplitPane.getDailyTodoList();
-        List<TodoListTable> todoListTables = todoList.getAllTodoListTables();
-        todoListTables.forEach(saveManager::unregisterSaveItem);
+        if (getComponentAt(index) instanceof PlannerTabView tabView) {
+            tabView.unregisterAllSaveItems();
+        }
     }
 
     private int showConfirmationDialog(String tabName) {

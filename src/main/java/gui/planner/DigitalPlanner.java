@@ -1,36 +1,16 @@
 package gui.planner;
 
-import gui.planner.components.calendar.CalendarPanel;
-import gui.planner.components.calendar.DateSelectionListener;
-import gui.planner.components.dailyinfo.DailyInfo;
-import gui.planner.components.notes.NotesScrollPane;
 import gui.planner.components.preferences.PreferencesDialog;
-import gui.planner.components.todolist.TodoList;
-import tools.Constants;
+import gui.planner.components.tabs.PlannerTabbedPane;
 import tools.savemanager.SaveManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
-public class DigitalPlanner extends JFrame implements DateSelectionListener {
-
-    private final TodoList generalTodoList;
-    private final NotesScrollPane generalNotesScrollPane;
-    private final JSplitPane upperSplitPane;
-    private final Map<String, DailyInfo> dailyInfoMapByDate;
-
-    private DailyInfo currentDailyInfoPane;
-    private CalendarPanel calendarPanel;
-
+public class DigitalPlanner extends JFrame {
 
     public DigitalPlanner() {
-        this.dailyInfoMapByDate = new HashMap<>();
-
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
 
@@ -59,66 +39,13 @@ public class DigitalPlanner extends JFrame implements DateSelectionListener {
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
 
-        initializeCalendarPanel();
-        this.generalTodoList = new TodoList(Constants.PLANNER_ROOT_DIRECTORY);
-        JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, calendarPanel, generalTodoList);
-        leftSplitPane.setDividerLocation(200);
-
-        String todaysDateString = getTodaysDateString();
-        DailyInfo dailyInfo = new DailyInfo(todaysDateString);
-        dailyInfoMapByDate.putIfAbsent(todaysDateString, dailyInfo);
-
-        // TODO: add a tabbedPane that persists regardless of the date
-        this.currentDailyInfoPane = dailyInfo;
-        this.upperSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, currentDailyInfoPane);
-        upperSplitPane.setDividerLocation(300);
-
-        this.generalNotesScrollPane = createGeneralNotesTextArea();
-        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperSplitPane, generalNotesScrollPane);
-
-        mainSplitPane.setDividerLocation(550);
-        this.getContentPane().add(BorderLayout.CENTER, mainSplitPane);
-
-        refreshUI();
-    }
-
-    private void initializeCalendarPanel() {
-        this.calendarPanel = new CalendarPanel();
-        this.calendarPanel.setBorder(BorderFactory.createTitledBorder("Calendar"));
-        this.calendarPanel.registerDateSelectionListener(this);
-    }
-
-    private NotesScrollPane createGeneralNotesTextArea() {
-        NotesScrollPane notesScrollPane = new NotesScrollPane(Constants.PLANNER_ROOT_DIRECTORY);
-        notesScrollPane.setBorder(BorderFactory.createTitledBorder("General Notes"));
-        return notesScrollPane;
-    }
-
-    @Override
-    public void onDateSelected(Calendar selectedDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        String dateString = dateFormat.format(selectedDate.getTime());
-
-        DailyInfo newDailyInfoPane = dailyInfoMapByDate.getOrDefault(dateString, new DailyInfo(dateString));
-        dailyInfoMapByDate.putIfAbsent(dateString, newDailyInfoPane);
-        upperSplitPane.remove(currentDailyInfoPane);
-        upperSplitPane.add(newDailyInfoPane);
-
-        int dividerLocation = upperSplitPane.getDividerLocation();
-        upperSplitPane.setDividerLocation(dividerLocation);
-        this.currentDailyInfoPane = newDailyInfoPane;
-
-        refreshUI();
+        PlannerTabbedPane plannerTabbedPane = new PlannerTabbedPane();
+        this.getContentPane().add(plannerTabbedPane, BorderLayout.CENTER);
     }
 
     private void refreshUI() {
         revalidate();
         repaint();
-    }
-
-    private String getTodaysDateString() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        return dateFormat.format(Calendar.getInstance().getTime());
     }
 
 }

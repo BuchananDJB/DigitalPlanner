@@ -33,7 +33,7 @@ public class TodoListTable extends JTable implements SaveItem, TaskStatusListene
     public TodoListTable(String title, boolean isCompleteTable, String directoryPath, TodoItemList todoItemList) {
         this(title, isCompleteTable, directoryPath);
         populateTable(todoItemList);
-        if (getRowCount() == 0) {
+        if (!isCompleteTable && getRowCount() == 0) {
             addEmptyRow();
         }
     }
@@ -63,16 +63,21 @@ public class TodoListTable extends JTable implements SaveItem, TaskStatusListene
             }
 
             if (!tableChanged) {
-                handleTableChange();
+                registerSaveItem();
                 tableChanged = true;
             }
         });
 
     }
 
-    private void handleTableChange() {
+    private void registerSaveItem() {
         SaveManager saveManager = new SaveManager();
         saveManager.registerSaveItem(this);
+    }
+
+    public void unregisterSaveItem() {
+        SaveManager saveManager = new SaveManager();
+        saveManager.unregisterSaveItem(this);
     }
 
     private void populateTable(TodoItemList todoItemList) {
