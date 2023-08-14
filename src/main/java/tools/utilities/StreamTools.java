@@ -10,7 +10,7 @@ public class StreamTools {
         return collection != null ? collection.stream() : Stream.empty();
     }
 
-    public static Stream<?> stream(Object[] array) {
+    public static <T> Stream<T> stream(T[] array) {
         return array != null ? Arrays.stream(array) : Stream.empty();
     }
 

@@ -9,8 +9,8 @@ public class Main {
 
     public static void main(String[] args) {
         saveManager = new SaveManager();
-        GUIInitializer guiInitializer = new GUIInitializer(Main::saveAndShutdown);
 
+        GUIInitializer guiInitializer = new GUIInitializer(Main::saveAndShutdown);
         try {
             guiInitializer.initializeGUI();
             saveManager.startAutoSave();

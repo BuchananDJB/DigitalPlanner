@@ -25,7 +25,7 @@ public class DailyInfoSplitPane extends JSplitPane {
         this.setDividerLocation(350);
     }
 
-    public NotesScrollPane getDailyNotesTextArea() {
+    public NotesScrollPane getDailyNotesScrollPane() {
         return dailyNotesScrollPane;
     }
 

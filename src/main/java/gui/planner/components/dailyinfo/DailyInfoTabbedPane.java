@@ -45,7 +45,6 @@ public class DailyInfoTabbedPane extends JTabbedPane {
                     int index = DailyInfoTabbedPane.this.indexAtLocation(e.getX(), e.getY());
                     JPopupMenu popupMenu = createPopupMenu(index);
                     popupMenu.show(DailyInfoTabbedPane.this, e.getX(), e.getY());
-
                 }
             }
         });
@@ -152,7 +151,7 @@ public class DailyInfoTabbedPane extends JTabbedPane {
         SaveManager saveManager = new SaveManager();
 
         DailyInfoSplitPane dailyInfoSplitPane = (DailyInfoSplitPane) getComponentAt(index);
-        NotesScrollPane notesScrollPane = dailyInfoSplitPane.getDailyNotesTextArea();
+        NotesScrollPane notesScrollPane = dailyInfoSplitPane.getDailyNotesScrollPane();
         saveManager.unregisterSaveItem(notesScrollPane);
 
         TodoList todoList = dailyInfoSplitPane.getDailyTodoList();
