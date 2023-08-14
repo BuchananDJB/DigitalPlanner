@@ -49,7 +49,7 @@ public class PreferencesDialog extends JDialog {
         if (selectedTheme != null) {
             GUIInitializer.applyTheme(selectedTheme);
 
-            List<String> preferences = FileTools.readFileAsListOfStrings(Constants.PREFERENCES_PATH);
+            List<String> preferences = FileTools.readFileAsListOfStrings(Constants.PREFERENCES_FILE_PATH);
             for (int i = 0; i < preferences.size(); i++) {
                 String preference = preferences.get(i);
                 if (preference.startsWith("theme:")) {
@@ -57,7 +57,7 @@ public class PreferencesDialog extends JDialog {
                     break;
                 }
             }
-            FileTools.writeStringsToFile(preferences, Constants.PREFERENCES_PATH);
+            FileTools.writeStringsToFile(preferences, Constants.PREFERENCES_FILE_PATH);
         }
     }
 }

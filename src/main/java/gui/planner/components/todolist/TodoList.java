@@ -96,4 +96,11 @@ public class TodoList extends JTabbedPane {
                 socialCompleteTodoListTable));
     }
 
+    public void unregisterAllTodoListSaveItems() {
+        generalIncompleteTodoListTable.unregisterSaveItem();
+        generalCompleteTodoListTable.unregisterSaveItem();
+        socialIncompleteTodoListTable.unregisterSaveItem();
+        socialCompleteTodoListTable.unregisterSaveItem();
+    }
+
 }

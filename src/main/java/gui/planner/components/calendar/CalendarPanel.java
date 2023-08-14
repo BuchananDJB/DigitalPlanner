@@ -16,6 +16,7 @@ import java.util.*;
 
 public class CalendarPanel extends JPanel {
 
+    private final String plannerTabTitle;
     private final Calendar calendar;
     private final JLabel monthYearLabel;
     private final JButton prevButton;
@@ -28,12 +29,13 @@ public class CalendarPanel extends JPanel {
     private final Calendar selectedDate;
     private final Set<DateSelectionListener> dateSelectionListeners;
 
-    public CalendarPanel() {
-        this(300, 200);
+    public CalendarPanel(String plannerTabTitle) {
+        this(plannerTabTitle, 300, 200);
     }
 
-    public CalendarPanel(int width, int height) {
+    public CalendarPanel(String plannerTabTitle, int width, int height) {
         this.dateSelectionListeners = new HashSet<>();
+        this.plannerTabTitle = plannerTabTitle;
         this.setSize(width, height);
         this.setLayout(new BorderLayout());
         this.setVisible(true);
@@ -232,7 +234,7 @@ public class CalendarPanel extends JPanel {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         String dateString = dateFormat.format(date.getTime());
 
-        String dateDirectory = Constants.DAILY_INFO_DIRECTORY + dateString;
+        String dateDirectory = Constants.TABVIEWS_DIRECTORY + plannerTabTitle + "/" + Constants.DAILY_INFO + dateString;
         List<String> dateTabNames = FileTools.listSubdirectories(dateDirectory);
         for (String tabName : dateTabNames) {
             if (!FileTools.directoryAndFilesAreEmpty(dateDirectory + "/" + tabName)) {

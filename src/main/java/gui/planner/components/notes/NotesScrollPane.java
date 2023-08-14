@@ -28,12 +28,17 @@ public class NotesScrollPane extends JScrollPane implements SaveItem {
         textArea.setText(notesTextContent);
         setupUndoRedo();
         setupRightClickMenu();
-        registerTextAreaSaveItem();
+        registerTextSaveItem();
     }
 
-    private void registerTextAreaSaveItem() {
+    private void registerTextSaveItem() {
         SaveManager saveManager = new SaveManager();
         saveManager.registerSaveItem(this);
+    }
+
+    public void unregisterTextSaveItem() {
+        SaveManager saveManager = new SaveManager();
+        saveManager.unregisterSaveItem(this);
     }
 
     private void setupUndoRedo() {

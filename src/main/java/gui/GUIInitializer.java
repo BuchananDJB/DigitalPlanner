@@ -43,7 +43,7 @@ public class GUIInitializer {
     }
 
     public static Optional<String> getCurrentTheme() {
-        List<String> preferences = FileTools.readFileAsListOfStrings(Constants.PREFERENCES_PATH);
+        List<String> preferences = FileTools.readFileAsListOfStrings(Constants.PREFERENCES_FILE_PATH);
         return StreamTools.stream(preferences).filter(item -> item.startsWith("theme")).findFirst();
     }
 

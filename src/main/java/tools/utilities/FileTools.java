@@ -113,28 +113,32 @@ public class FileTools {
         }
     }
 
-    public static void deleteEmptySubdirectories(String directoryPath) {
+    public static void deleteEmptySubdirectoriesAndFiles(String directoryPath) {
         File directory = new File(directoryPath);
 
         if (!directory.exists() || !directory.isDirectory()) {
-            GUITools.displayDialog("Error clearing empty directories.");
+            GUITools.displayDialog("Error clearing empty directories and files.");
             return;
         }
 
-        deleteEmptySubdirectoriesRecursive(directory);
+        deleteEmptySubdirectoriesAndFilesRecursive(directory);
     }
 
-    private static void deleteEmptySubdirectoriesRecursive(File directory) {
-        File[] subdirectories = directory.listFiles(File::isDirectory);
+    private static void deleteEmptySubdirectoriesAndFilesRecursive(File directory) {
+        File[] subdirectoriesAndFiles = directory.listFiles();
 
-        if (subdirectories == null) {
+        if (subdirectoriesAndFiles == null) {
             return;
         }
 
-        for (File subdirectory : subdirectories) {
-            deleteEmptySubdirectoriesRecursive(subdirectory);
-            if (isEmptyDirectory(subdirectory)) {
-                subdirectory.delete();
+        for (File item : subdirectoriesAndFiles) {
+            if (item.isDirectory()) {
+                deleteEmptySubdirectoriesAndFilesRecursive(item);
+                if (isEmptyDirectory(item)) {
+                    item.delete();
+                }
+            } else if (item.isFile() && item.length() == 0) {
+                item.delete();
             }
         }
     }
