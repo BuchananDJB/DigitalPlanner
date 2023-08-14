@@ -18,7 +18,8 @@ public class PlannerTabbedPane extends CustomTabbedPane {
         initializeTabsFromDirectories(Constants.TABVIEWS_DIRECTORY);
     }
 
-    public void addNewTab(String title) {
+    @Override
+    protected void addNewTab(String title) {
         FileTools.createDirectory(Constants.TABVIEWS_DIRECTORY + title);
         PlannerTabView dailyInfoTabbedPane = new PlannerTabView(title);
         this.addTab(title, dailyInfoTabbedPane);

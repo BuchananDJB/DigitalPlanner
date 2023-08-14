@@ -30,7 +30,7 @@ public class DailyInfoTabbedPane extends CustomTabbedPane {
     }
 
     @Override
-    public void addNewTab(String title) {
+    protected void addNewTab(String title) {
         FileTools.createDirectory(Constants.TABVIEWS_DIRECTORY + plannerTabTitle + "/" +
                 Constants.DAILY_INFO + pathFormattedDate + "/" + title);
         DailyInfoSplitPane dailyInfoSplitPane =

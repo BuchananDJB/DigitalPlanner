@@ -120,7 +120,7 @@ public abstract class CustomTabbedPane extends JTabbedPane {
         return super.isEnabledAt(index);
     }
 
-    public abstract void addNewTab(String title);
+    protected abstract void addNewTab(String title);
 
     protected abstract void deleteTab(int index);
 
