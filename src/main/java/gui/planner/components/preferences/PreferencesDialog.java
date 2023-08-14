@@ -2,7 +2,7 @@ package gui.planner.components.preferences;
 
 import gui.GUIInitializer;
 import tools.Constants;
-import tools.DataTools;
+import tools.utilities.FileTools;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,7 +49,7 @@ public class PreferencesDialog extends JDialog {
         if (selectedTheme != null) {
             GUIInitializer.applyTheme(selectedTheme);
 
-            List<String> preferences = DataTools.readFileAsListOfStrings(Constants.PREFERENCES_PATH);
+            List<String> preferences = FileTools.readFileAsListOfStrings(Constants.PREFERENCES_PATH);
             for (int i = 0; i < preferences.size(); i++) {
                 String preference = preferences.get(i);
                 if (preference.startsWith("theme:")) {
@@ -57,7 +57,7 @@ public class PreferencesDialog extends JDialog {
                     break;
                 }
             }
-            DataTools.writeStringsToFile(preferences, Constants.PREFERENCES_PATH);
+            FileTools.writeStringsToFile(preferences, Constants.PREFERENCES_PATH);
         }
     }
 }

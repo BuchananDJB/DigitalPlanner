@@ -1,7 +1,7 @@
 import gui.GUIInitializer;
 import tools.Constants;
-import tools.DataTools;
 import tools.savemanager.SaveManager;
+import tools.utilities.FileTools;
 
 public class Main {
 
@@ -9,8 +9,8 @@ public class Main {
 
     public static void main(String[] args) {
         saveManager = new SaveManager();
-        GUIInitializer guiInitializer = new GUIInitializer(Main::saveAndShutdown);
 
+        GUIInitializer guiInitializer = new GUIInitializer(Main::saveAndShutdown);
         try {
             guiInitializer.initializeGUI();
             saveManager.startAutoSave();
@@ -23,6 +23,6 @@ public class Main {
     private static void saveAndShutdown() {
         saveManager.saveAllData();
         saveManager.shutdown();
-        DataTools.deleteEmptySubdirectories(Constants.DAILY_INFO_DIRECTORY);
+        FileTools.deleteEmptySubdirectories(Constants.DAILY_INFO_DIRECTORY);
     }
 }

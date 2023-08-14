@@ -1,11 +1,12 @@
 package gui.planner.components.dailyinfo;
 
-import gui.planner.components.notes.NotesTextArea;
+import gui.planner.components.notes.NotesScrollPane;
 import gui.planner.components.todolist.TodoList;
 import gui.planner.components.todolist.TodoListTable;
 import tools.Constants;
-import tools.DataTools;
 import tools.savemanager.SaveManager;
+import tools.utilities.FileTools;
+import tools.utilities.StringTools;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,7 +45,6 @@ public class DailyInfoTabbedPane extends JTabbedPane {
                     int index = DailyInfoTabbedPane.this.indexAtLocation(e.getX(), e.getY());
                     JPopupMenu popupMenu = createPopupMenu(index);
                     popupMenu.show(DailyInfoTabbedPane.this, e.getX(), e.getY());
-
                 }
             }
         });
@@ -85,7 +85,7 @@ public class DailyInfoTabbedPane extends JTabbedPane {
         addButton.setPreferredSize(new Dimension(20, 20));
         addButton.addActionListener(e -> {
             String tabName = JOptionPane.showInputDialog(this, "Enter tab name:");
-            if (!DataTools.isNullEmptyBlankString(tabName)) {
+            if (!StringTools.isNullEmptyBlankString(tabName)) {
                 addNewTab(tabName);
             }
         });
@@ -94,7 +94,7 @@ public class DailyInfoTabbedPane extends JTabbedPane {
 
     private void initializeTabsFromDirectories() {
         Path path = Path.of(Constants.DAILY_INFO_DIRECTORY + pathFormattedDate);
-        DataTools.createDirectory(path.toString());
+        FileTools.createDirectory(path.toString());
         try {
             List<String> directories = Files.list(path).map(Path::toString).toList();
             directories.forEach(directory -> {
@@ -113,7 +113,7 @@ public class DailyInfoTabbedPane extends JTabbedPane {
     }
 
     public void addNewTab(String title) {
-        DataTools.createDirectory(Constants.DAILY_INFO_DIRECTORY + pathFormattedDate + "/" + title);
+        FileTools.createDirectory(Constants.DAILY_INFO_DIRECTORY + pathFormattedDate + "/" + title);
         DailyInfoSplitPane dailyInfoSplitPane =
                 new DailyInfoSplitPane(Constants.DAILY_INFO_DIRECTORY + pathFormattedDate + "/" + title);
         this.addTab(title, dailyInfoSplitPane);
@@ -140,7 +140,7 @@ public class DailyInfoTabbedPane extends JTabbedPane {
             String tabName = getTitleAt(index);
             int choice = showConfirmationDialog(tabName);
             if (choice == JOptionPane.YES_OPTION) {
-                DataTools.deleteDirectoryAndAllContents(Constants.DAILY_INFO_DIRECTORY + pathFormattedDate + "/" + tabName);
+                FileTools.deleteDirectoryAndAllContents(Constants.DAILY_INFO_DIRECTORY + pathFormattedDate + "/" + tabName);
                 unregisterSaveItems(index);
                 removeTabAt(index);
             }
@@ -151,8 +151,8 @@ public class DailyInfoTabbedPane extends JTabbedPane {
         SaveManager saveManager = new SaveManager();
 
         DailyInfoSplitPane dailyInfoSplitPane = (DailyInfoSplitPane) getComponentAt(index);
-        NotesTextArea notesTextArea = dailyInfoSplitPane.getDailyNotesTextArea();
-        saveManager.unregisterSaveItem(notesTextArea);
+        NotesScrollPane notesScrollPane = dailyInfoSplitPane.getDailyNotesScrollPane();
+        saveManager.unregisterSaveItem(notesScrollPane);
 
         TodoList todoList = dailyInfoSplitPane.getDailyTodoList();
         List<TodoListTable> todoListTables = todoList.getAllTodoListTables();

@@ -1,6 +1,7 @@
 package gui.tools;
 
-import tools.DataTools;
+import tools.utilities.StreamTools;
+import tools.utilities.StringTools;
 
 import javax.swing.*;
 
@@ -10,11 +11,11 @@ public class GUITools {
     }
 
     public static String prettyPrintDate(String date) {
-        if (DataTools.isNullEmptyBlankString(date)) {
+        if (StringTools.isNullEmptyBlankString(date)) {
             return "00 Month 0000";
         }
 
-        int[] values = DataTools.stream(date.split("/"))
+        int[] values = StreamTools.stream(date.split("/"))
                 .map(Object::toString)
                 .mapToInt(Integer::parseInt)
                 .toArray();

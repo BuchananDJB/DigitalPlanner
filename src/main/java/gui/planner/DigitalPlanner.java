@@ -3,7 +3,7 @@ package gui.planner;
 import gui.planner.components.calendar.CalendarPanel;
 import gui.planner.components.calendar.DateSelectionListener;
 import gui.planner.components.dailyinfo.DailyInfo;
-import gui.planner.components.notes.NotesTextArea;
+import gui.planner.components.notes.NotesScrollPane;
 import gui.planner.components.preferences.PreferencesDialog;
 import gui.planner.components.todolist.TodoList;
 import tools.Constants;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class DigitalPlanner extends JFrame implements DateSelectionListener {
 
     private final TodoList generalTodoList;
-    private final NotesTextArea generalNotesTextArea;
+    private final NotesScrollPane generalNotesScrollPane;
     private final JSplitPane upperSplitPane;
     private final Map<String, DailyInfo> dailyInfoMapByDate;
 
@@ -73,8 +73,8 @@ public class DigitalPlanner extends JFrame implements DateSelectionListener {
         this.upperSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, currentDailyInfoPane);
         upperSplitPane.setDividerLocation(300);
 
-        this.generalNotesTextArea = createGeneralNotesTextArea();
-        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperSplitPane, generalNotesTextArea);
+        this.generalNotesScrollPane = createGeneralNotesTextArea();
+        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperSplitPane, generalNotesScrollPane);
 
         mainSplitPane.setDividerLocation(550);
         this.getContentPane().add(BorderLayout.CENTER, mainSplitPane);
@@ -88,10 +88,10 @@ public class DigitalPlanner extends JFrame implements DateSelectionListener {
         this.calendarPanel.registerDateSelectionListener(this);
     }
 
-    private NotesTextArea createGeneralNotesTextArea() {
-        NotesTextArea notesTextArea = new NotesTextArea(Constants.PLANNER_ROOT_DIRECTORY);
-        notesTextArea.setBorder(BorderFactory.createTitledBorder("General Notes"));
-        return notesTextArea;
+    private NotesScrollPane createGeneralNotesTextArea() {
+        NotesScrollPane notesScrollPane = new NotesScrollPane(Constants.PLANNER_ROOT_DIRECTORY);
+        notesScrollPane.setBorder(BorderFactory.createTitledBorder("General Notes"));
+        return notesScrollPane;
     }
 
     @Override

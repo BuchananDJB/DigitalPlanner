@@ -6,7 +6,8 @@ import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialPaleni
 import gui.planner.DigitalPlanner;
 import gui.tools.GUITools;
 import tools.Constants;
-import tools.DataTools;
+import tools.utilities.FileTools;
+import tools.utilities.StreamTools;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,8 +43,8 @@ public class GUIInitializer {
     }
 
     public static Optional<String> getCurrentTheme() {
-        List<String> preferences = DataTools.readFileAsListOfStrings(Constants.PREFERENCES_PATH);
-        return DataTools.stream(preferences).filter(item -> item.startsWith("theme")).findFirst();
+        List<String> preferences = FileTools.readFileAsListOfStrings(Constants.PREFERENCES_PATH);
+        return StreamTools.stream(preferences).filter(item -> item.startsWith("theme")).findFirst();
     }
 
     public static void applyTheme(String themeName) {

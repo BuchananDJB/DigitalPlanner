@@ -1,7 +1,7 @@
 package gui.planner.components.calendar;
 
 import tools.Constants;
-import tools.DataTools;
+import tools.utilities.FileTools;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -233,9 +233,9 @@ public class CalendarPanel extends JPanel {
         String dateString = dateFormat.format(date.getTime());
 
         String dateDirectory = Constants.DAILY_INFO_DIRECTORY + dateString;
-        List<String> dateTabNames = DataTools.listSubdirectories(dateDirectory);
+        List<String> dateTabNames = FileTools.listSubdirectories(dateDirectory);
         for (String tabName : dateTabNames) {
-            if (!DataTools.directoryAndFilesAreEmpty(dateDirectory + "/" + tabName)) {
+            if (!FileTools.directoryAndFilesAreEmpty(dateDirectory + "/" + tabName)) {
                 return true;
             }
         }
