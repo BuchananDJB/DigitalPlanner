@@ -13,19 +13,18 @@ public class SaveCache {
             SaveCache.instance = new SaveCache();
         }
         return instance;
-
     }
 
     private SaveCache() {
         this.saveItems = new HashSet<>();
     }
 
-    public void addSaveItem(SaveItem saveItem) {
-        saveItems.add(saveItem);
+    public boolean addSaveItem(SaveItem saveItem) {
+        return saveItems.add(saveItem);
     }
 
-    public void removeSaveItem(SaveItem saveItem) {
-        saveItems.remove(saveItem);
+    public boolean removeSaveItem(SaveItem saveItem) {
+        return saveItems.remove(saveItem);
     }
 
     public void saveAllItems() {

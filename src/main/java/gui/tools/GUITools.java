@@ -11,8 +11,9 @@ public class GUITools {
     }
 
     public static String prettyPrintDate(String date) {
+        String defaultErrorOutput = "00 Month 0000";
         if (StringTools.isNullEmptyBlankString(date)) {
-            return "00 Month 0000";
+            return defaultErrorOutput;
         }
 
         int[] values = StreamTools.stream(date.split("/"))
@@ -20,7 +21,11 @@ public class GUITools {
                 .mapToInt(Integer::parseInt)
                 .toArray();
 
-        String month = "";
+        if (values.length < 3) {
+            return defaultErrorOutput;
+        }
+
+        String month;
         switch (values[1]) {
             case 1 -> month = "January";
             case 2 -> month = "February";
@@ -34,7 +39,7 @@ public class GUITools {
             case 10 -> month = "October";
             case 11 -> month = "November";
             case 12 -> month = "December";
-            default -> {}
+            default -> month = "Month";
         }
 
         return String.format("%d %s %d", values[2], month, values[0]);

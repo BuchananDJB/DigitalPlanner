@@ -13,7 +13,7 @@ public class Main {
         GUIInitializer guiInitializer = new GUIInitializer(Main::saveAndShutdown);
         try {
             guiInitializer.initializeGUI();
-            saveManager.startAutoSave();
+            saveManager.startDefaultAutoSave();
         } catch (Exception e) {
             e.printStackTrace();
             saveAndShutdown();
