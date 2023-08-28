@@ -21,14 +21,14 @@ public class SaveCacheTest {
     }
 
     @Test
-    public void addSaveItem_test() {
+    public void addSaveItem() {
         SaveItem mockSaveItem = mock(SaveItem.class);
         assertTrue(saveCache.addSaveItem(mockSaveItem));
         assertFalse(saveCache.addSaveItem(mockSaveItem));
     }
 
     @Test
-    public void removeSaveItem_test() {
+    public void removeSaveItem() {
         SaveItem mockSaveItem = mock(SaveItem.class);
         assertFalse(saveCache.removeSaveItem(mockSaveItem));
         assertTrue(saveCache.addSaveItem(mockSaveItem));
@@ -36,7 +36,7 @@ public class SaveCacheTest {
     }
 
     @Test
-    public void saveAllItems_test() {
+    public void saveAllItems() {
         Set<SaveItem> mockSaveItems = new HashSet<>();
         for (int i = 0; i < 1000; ++i) {
             mockSaveItems.add(mock(SaveItem.class));
