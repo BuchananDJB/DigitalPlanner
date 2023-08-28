@@ -14,8 +14,17 @@ public class SaveManager {
         this.executorService = Executors.newSingleThreadScheduledExecutor();
     }
 
-    public void startAutoSave() {
+    public SaveManager(SaveCache saveCache, ScheduledExecutorService executorService) {
+        this.saveCache = saveCache;
+        this.executorService = executorService;
+    }
+
+    public void startDefaultAutoSave() {
         executorService.scheduleAtFixedRate(this::saveAllData, 1, 1, TimeUnit.MINUTES);
+    }
+
+    public void startCustomAutoSave(long initialDelay, long period, TimeUnit timeUnit) {
+        executorService.scheduleAtFixedRate(this::saveAllData, initialDelay, period, timeUnit);
     }
 
     public void saveAllData() {
@@ -33,11 +42,11 @@ public class SaveManager {
         }
     }
 
-    public void registerSaveItem(SaveItem saveItem) {
-        saveCache.addSaveItem(saveItem);
+    public boolean registerSaveItem(SaveItem saveItem) {
+        return saveCache.addSaveItem(saveItem);
     }
 
-    public void unregisterSaveItem(SaveItem saveItem) {
-        saveCache.removeSaveItem(saveItem);
+    public boolean unregisterSaveItem(SaveItem saveItem) {
+        return saveCache.removeSaveItem(saveItem);
     }
 }
