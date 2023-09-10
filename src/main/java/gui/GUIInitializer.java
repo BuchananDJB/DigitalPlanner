@@ -81,7 +81,6 @@ public class GUIInitializer {
 
     private void modifyUIDefaults() {
         UIManager.put("TabbedPane.showTabSeparators", true);
-
         UIManager.put("ScrollBar.thumbArc", 999 );
         UIManager.put("ScrollBar.thumbInsets", new Insets( 2, 2, 2, 2 ));
     }
@@ -89,6 +88,8 @@ public class GUIInitializer {
     private void initializePlannerFrame() {
         DigitalPlanner digitalPlanner = new DigitalPlanner();
         digitalPlanner.setTitle("Digital Planner");
+        ImageIcon icon = new ImageIcon(Constants.SMALL_ICON_FILE_PATH);
+        digitalPlanner.setIconImage(icon.getImage());
         digitalPlanner.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         digitalPlanner.setSize(1300, 800);
         digitalPlanner.setLocationRelativeTo(null);
