@@ -90,7 +90,7 @@ public class GUIInitializer {
         DigitalPlanner digitalPlanner = new DigitalPlanner();
         digitalPlanner.setTitle("Digital Planner");
         digitalPlanner.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        digitalPlanner.setSize(1280, 720);
+        digitalPlanner.setSize(1300, 800);
         digitalPlanner.setLocationRelativeTo(null);
         digitalPlanner.setVisible(true);
 
