@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,8 +89,7 @@ public class GUIInitializer {
     private void initializePlannerFrame() {
         DigitalPlanner digitalPlanner = new DigitalPlanner();
         digitalPlanner.setTitle("Digital Planner");
-        ImageIcon icon = new ImageIcon(Constants.SMALL_ICON_FILE_PATH);
-        digitalPlanner.setIconImage(icon.getImage());
+        setIcon(digitalPlanner);
         digitalPlanner.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         digitalPlanner.setSize(1300, 800);
         digitalPlanner.setLocationRelativeTo(null);
@@ -102,6 +102,14 @@ public class GUIInitializer {
                 digitalPlanner.dispose();
             }
         });
+    }
+
+    private void setIcon(DigitalPlanner digitalPlanner) {
+        File imageFile = new File(Constants.SMALL_ICON_FILE_PATH);
+        if (imageFile.isFile()) {
+            ImageIcon icon = new ImageIcon(Constants.SMALL_ICON_FILE_PATH);
+            digitalPlanner.setIconImage(icon.getImage());
+        }
     }
 
     private void initializeTestFrame() {
