@@ -82,7 +82,6 @@ public class GUIInitializer {
 
     private void modifyUIDefaults() {
         UIManager.put("TabbedPane.showTabSeparators", true);
-
         UIManager.put("ScrollBar.thumbArc", 999 );
         UIManager.put("ScrollBar.thumbInsets", new Insets( 2, 2, 2, 2 ));
     }

@@ -1,6 +1,8 @@
 package tools;
 
 public class Constants {
+    public static final String DIGITAL_PLANNER = "Digital Planner";
+
     public static final String PLANNER_ROOT_DIRECTORY = "Planner/";
     public static final String TABVIEWS_DIRECTORY = PLANNER_ROOT_DIRECTORY + "TabViews/";
 
